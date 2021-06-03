@@ -1,0 +1,35 @@
+/* Headers */
+h1,h2,h3,h4,h5,h6{
+  font-size: 24pt;
+}
+
+
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 16px;
+   margin: -10px;
+   paddin: 0px
+   margin-left: auto;
+   margin-right: auto;
+}
+
+.left{
+  float: left;
+  width: 48%;
+  text-align: left;
+}
+.center{
+  display: inline-block;
+  width: 4%;
+  text-align: center;
+}
+.right{
+  float: right;
+  width: 48%;
+  text-align: left;
+}
+
+body .main-container {
+  max-width: 1300px;
+}

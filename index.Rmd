@@ -1,0 +1,22 @@
+---
+title: "Compare R and SQL"
+output: html_document
+author: Kevin Wang Ph.D.
+---
+
+# Why I am making this site?
+
+1. I am already well-versed in `R` and `dplyr`, however, I would like to have a place to serve as a cheat-sheet for performing similar tasks in `SQL`
+1. This is a place for me to document my self-learning during COVID-19. Hopefully this will be a good place to point to when I seek future employments.
+
+# Structure
+
+The rest of this site is organised into webpages at the top, with each webpage correspond to a specific task. Each webpage is organised into two columns, with `R` codes on the left and the `SQL` codes on the right, aiming to achieve the same tasks. 
+
+# Code reproducibility
+
+![](https://github.com/kevinwang09/compare-r-sql/workflows/rmarkdown-build/badge.svg)
+
+This website is deployed through GitHub Actions using [this workflow](https://github.com/kevinwang09/compare-r-sql/blob/main/.github/workflows/rmarkdown-build.yaml). As such, the codes should be fully reproducible. 
+
+The data that I have used are available in the same repository. The SQL set up is to use a local connection to a CSV file. It does not represent a typical workflow where one connects to a SQL server, though that is not the focus on this project. 
