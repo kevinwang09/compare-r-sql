@@ -1,24 +1,12 @@
 # This file controls the layout of the website. 
 navbar:
   icon: fa-home
-  title: "Compare R and Python"
+  title: "Compare R and SQL"
   left:
     - text: "Basic concepts"
       menu:
-        - text: Lists, vectors, dictionaries
-          href: https://kevinwang09.github.io/compare-r-python/base.html
-        - text: Data frame
-          href: https://kevinwang09.github.io/compare-r-python/dataframe.html
-        - text: Functions
-          href: https://kevinwang09.github.io/compare-r-python/functions.html
-    - text: "Supervised learning"
-      menu:
-        - text: Basic classifiers
-        - href: https://kevinwang09.github.io/compare-r-python/classifiers.html
-        - text: Model tuning
-        - href: https://kevinwang09.github.io/compare-r-python/model_tuning.html
-        - text: Wrapping into workflows
-        - href: https://kevinwang09.github.io/compare-r-python/workflows.html
+        - text: Basic operations
+          href: https://kevinwang09.github.io/compare-r-sql/basic.html
   right:
     - text: "Source code"
       icon: fa-code

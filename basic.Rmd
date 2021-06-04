@@ -1,0 +1,47 @@
+---
+title: "Basic operations"
+author: "Kevin Wang"
+date: "4 June 2021"
+output: html_document
+---
+
+# Data preparation 
+
+Evaluated only once to create a CSV file.
+
+```{r, eval = FALSE}
+library(palmerpenguins)
+library(tidyverse)
+readr::write_csv(x = penguins, file = "data/penguins.csv")
+```
+
+# Setting up connection (in `R`)
+```{r}
+library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+penguins = readr::read_csv(file = "data/penguins.csv")
+dbListTables(con)
+
+dbWriteTable(con, "penguins", penguins)
+dbListTables(con)
+dbListFields(con, "penguins")
+```
+
+
+
+# Select
+
+::: {.left}
+## `R`
+
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT "species" FROM "penguins"
+```
+
+:::
