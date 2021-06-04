@@ -299,32 +299,12 @@ readr::write_csv(x = penguins, file = &quot;data/penguins.csv&quot;)</code></pre
 </div>
 <div id="setting-up-connection-in-r" class="section level1">
 <h1>Setting up connection (in <code>R</code>)</h1>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(DBI)
+<pre class="r"><code>library(dplyr)
+library(DBI)
 # Create an ephemeral in-memory RSQLite database
 con &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
-penguins = readr::read_csv(file = &quot;data/penguins.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   species = col_character(),
-##   island = col_character(),
-##   bill_length_mm = col_double(),
-##   bill_depth_mm = col_double(),
-##   flipper_length_mm = col_double(),
-##   body_mass_g = col_double(),
-##   sex = col_character(),
-##   year = col_double()
-## )</code></pre>
-<pre class="r"><code>dbListTables(con)</code></pre>
+penguins = readr::read_csv(file = &quot;data/penguins.csv&quot;)
+dbListTables(con)</code></pre>
 <pre><code>## character(0)</code></pre>
 <pre class="r"><code>dbWriteTable(con, &quot;penguins&quot;, penguins)
 dbListTables(con)</code></pre>
@@ -334,17 +314,278 @@ dbListTables(con)</code></pre>
 ## [4] &quot;bill_depth_mm&quot;     &quot;flipper_length_mm&quot; &quot;body_mass_g&quot;      
 ## [7] &quot;sex&quot;               &quot;year&quot;</code></pre>
 </div>
-<div id="select" class="section level1">
-<h1>Select</h1>
+<div id="selecting-columns" class="section level1">
+<h1>Selecting columns</h1>
 <div id="r" class="section level2 left">
 <h2><code>R</code></h2>
+<pre class="r"><code>penguins %&gt;% 
+  select(species, island)</code></pre>
+<pre><code>## # A tibble: 344 x 2
+##    species island   
+##    &lt;chr&gt;   &lt;chr&gt;    
+##  1 Adelie  Torgersen
+##  2 Adelie  Torgersen
+##  3 Adelie  Torgersen
+##  4 Adelie  Torgersen
+##  5 Adelie  Torgersen
+##  6 Adelie  Torgersen
+##  7 Adelie  Torgersen
+##  8 Adelie  Torgersen
+##  9 Adelie  Torgersen
+## 10 Adelie  Torgersen
+## # … with 334 more rows</code></pre>
 </div>
 <div id="sql" class="section level2 right">
 <h2><code>SQL</code></h2>
-<pre class="sql"><code>SELECT &quot;species&quot; FROM &quot;penguins&quot;</code></pre>
+<pre class="sql"><code>SELECT species, island 
+FROM penguins</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="left">island</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+<div id="select-all-columns" class="section level2">
+<h2>Select all columns</h2>
+</div>
+<div id="r-1" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>penguins %&gt;% 
+  select_all()</code></pre>
+<pre><code>## # A tibble: 344 x 8
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    &lt;chr&gt;   &lt;chr&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;       &lt;dbl&gt;
+##  1 Adelie  Torgersen           39.1          18.7               181        3750
+##  2 Adelie  Torgersen           39.5          17.4               186        3800
+##  3 Adelie  Torgersen           40.3          18                 195        3250
+##  4 Adelie  Torgersen           NA            NA                  NA          NA
+##  5 Adelie  Torgersen           36.7          19.3               193        3450
+##  6 Adelie  Torgersen           39.3          20.6               190        3650
+##  7 Adelie  Torgersen           38.9          17.8               181        3625
+##  8 Adelie  Torgersen           39.2          19.6               195        4675
+##  9 Adelie  Torgersen           34.1          18.1               193        3475
+## 10 Adelie  Torgersen           42            20.2               190        4250
+## # … with 334 more rows, and 2 more variables: sex &lt;chr&gt;, year &lt;dbl&gt;</code></pre>
+</div>
+<div id="sql-1" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT * 
+FROM penguins;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="8%" />
+<col width="11%" />
+<col width="16%" />
+<col width="15%" />
+<col width="20%" />
+<col width="13%" />
+<col width="7%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="left">island</th>
+<th align="right">bill_length_mm</th>
+<th align="right">bill_depth_mm</th>
+<th align="right">flipper_length_mm</th>
+<th align="right">body_mass_g</th>
+<th align="left">sex</th>
+<th align="right">year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.1</td>
+<td align="right">18.7</td>
+<td align="right">181</td>
+<td align="right">3750</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.5</td>
+<td align="right">17.4</td>
+<td align="right">186</td>
+<td align="right">3800</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">40.3</td>
+<td align="right">18.0</td>
+<td align="right">195</td>
+<td align="right">3250</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">36.7</td>
+<td align="right">19.3</td>
+<td align="right">193</td>
+<td align="right">3450</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.3</td>
+<td align="right">20.6</td>
+<td align="right">190</td>
+<td align="right">3650</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">38.9</td>
+<td align="right">17.8</td>
+<td align="right">181</td>
+<td align="right">3625</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.2</td>
+<td align="right">19.6</td>
+<td align="right">195</td>
+<td align="right">4675</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">34.1</td>
+<td align="right">18.1</td>
+<td align="right">193</td>
+<td align="right">3475</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">42.0</td>
+<td align="right">20.2</td>
+<td align="right">190</td>
+<td align="right">4250</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+<div id="selecting-distict-entries-from" class="section level2">
+<h2>Selecting distict entries from</h2>
+</div>
+<div id="r-2" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>penguins %&gt;% 
+  distinct(species)</code></pre>
+<pre><code>## # A tibble: 3 x 1
+##   species  
+##   &lt;chr&gt;    
+## 1 Adelie   
+## 2 Gentoo   
+## 3 Chinstrap</code></pre>
+<pre class="r"><code>penguins %&gt;% 
+  distinct(species, island)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   species   island   
+##   &lt;chr&gt;     &lt;chr&gt;    
+## 1 Adelie    Torgersen
+## 2 Adelie    Biscoe   
+## 3 Adelie    Dream    
+## 4 Gentoo    Biscoe   
+## 5 Chinstrap Dream</code></pre>
+</div>
+<div id="sql-2" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT DISTINCT species 
+FROM penguins;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>3 records</caption>
 <thead>
 <tr class="header">
 <th align="left">species</th>
@@ -355,35 +596,101 @@ dbListTables(con)</code></pre>
 <td align="left">Adelie</td>
 </tr>
 <tr class="even">
-<td align="left">Adelie</td>
+<td align="left">Gentoo</td>
 </tr>
 <tr class="odd">
-<td align="left">Adelie</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
+<td align="left">Chinstrap</td>
 </tr>
 </tbody>
 </table>
 </div>
+<pre class="sql"><code>SELECT DISTINCT species, island 
+FROM penguins;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>5 records</caption>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="left">island</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Biscoe</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Dream</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+</tr>
+<tr class="odd">
+<td align="left">Chinstrap</td>
+<td align="left">Dream</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="counting-number-of-distinct-entries" class="section level1">
+<h1>Counting number of distinct entries</h1>
+<div id="r-3" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>penguins %&gt;%
+  group_by(species) %&gt;% 
+  tally()</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   species       n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 Adelie      152
+## 2 Chinstrap    68
+## 3 Gentoo      124</code></pre>
+</div>
+<div id="sql-3" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT species, COUNT(species) AS n
+FROM penguins
+GROUP BY species;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>3 records</caption>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="right">152</td>
+</tr>
+<tr class="even">
+<td align="left">Chinstrap</td>
+<td align="right">68</td>
+</tr>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="right">124</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
 </div>
 </div>
 

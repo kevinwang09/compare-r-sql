@@ -16,7 +16,7 @@ readr::write_csv(x = penguins, file = "data/penguins.csv")
 ```
 
 # Setting up connection (in `R`)
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(dplyr)
 library(DBI)
 # Create an ephemeral in-memory RSQLite database
@@ -31,17 +31,100 @@ dbListFields(con, "penguins")
 
 
 
-# Select
+# Selecting columns
 
 ::: {.left}
 ## `R`
 
+```{r}
+penguins %>% 
+  select(species, island)
+```
 :::
 
 ::: {.right}
 ## `SQL`
 ```{sql, connection=con}
-SELECT "species" FROM "penguins"
+SELECT species, island 
+FROM penguins
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+## Select all columns
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  select_all()
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT * 
+FROM penguins;
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+## Selecting distict entries from 
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  distinct(species)
+
+penguins %>% 
+  distinct(species, island)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT DISTINCT species 
+FROM penguins;
 ```
 
+```{sql, connection=con}
+SELECT DISTINCT species, island 
+FROM penguins;
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Counting number of distinct entries
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>%
+  group_by(species) %>% 
+  tally()
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, COUNT(species) AS n
+FROM penguins
+GROUP BY species;
+```
+:::
+
+::: {style="margin-bottom:800px;"}
 :::

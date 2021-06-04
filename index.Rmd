@@ -15,8 +15,8 @@ The rest of this site is organised into webpages at the top, with each webpage c
 
 # Code reproducibility
 
-![](https://github.com/kevinwang09/compare-r-sql/workflows/rmarkdown-build/badge.svg)
+[![rmarkdown-build](https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml/badge.svg)](https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml)
 
-This website is deployed through GitHub Actions using [this workflow](https://github.com/kevinwang09/compare-r-sql/blob/main/.github/workflows/rmarkdown-build.yaml). As such, the codes should be fully reproducible. 
+This website is deployed through GitHub Actions using the workflow above. As such, the codes should be fully reproducible. 
 
 The data that I have used are available in the same repository. The SQL set up is to use a local connection to a CSV file. It does not represent a typical workflow where one connects to a SQL server, though that is not the focus on this project. 
