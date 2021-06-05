@@ -2,7 +2,11 @@
 title: "Basic operations"
 author: "Kevin Wang"
 date: "4 June 2021"
-output: html_document
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_depth: 1
 ---
 
 # Data preparation 
@@ -16,6 +20,11 @@ readr::write_csv(x = penguins, file = "data/penguins.csv")
 ```
 
 # Setting up connection (in `R`)
+
+This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database. 
+
+The print methods for `R` is different to that of `SQL`. 
+
 ```{r, warning=FALSE, message=FALSE}
 library(dplyr)
 library(DBI)
@@ -29,9 +38,9 @@ dbListTables(con)
 dbListFields(con, "penguins")
 ```
 
-
-
 # Selecting columns
+
+Both languages use `select` to subset columns.
 
 ::: {.left}
 ## `R`
@@ -77,6 +86,8 @@ FROM penguins;
 
 ## Selecting distict entries from 
 
+Both languages use a version of `distinct` to extract unique categorical variables, or a combination of several categorical variables. 
+
 ::: {.left}
 ## `R`
 
@@ -107,6 +118,12 @@ FROM penguins;
 
 # Counting number of distinct entries
 
+This is a frequency table. 
+
+`R` requires a tally function, which is smart enough to know that the grouping variable must always be kept. 
+
+`SQL` requires manual selection of both the grouping variable and the numerical frequencies. 
+
 ::: {.left}
 ## `R`
 
@@ -120,9 +137,376 @@ penguins %>%
 ::: {.right}
 ## `SQL`
 ```{sql, connection=con}
-SELECT species, COUNT(species) AS n
+SELECT species, 
+       COUNT(species) AS n
 FROM penguins
 GROUP BY species;
+```
+:::
+
+::: {style="margin-bottom:400px;"}
+:::
+
+# Filtering
+
+## Numeric columns
+
+The task is to find the species frequency distribution of penguins with body mass greater than 4000 grams. 
+
+The ordering of the `dplyr` verbs matter quite a bit here. The filtering operation must be done first, before the tallying. This is because the tallying operation (which is fundamentally a `summarise` operation) is an aggregation of the raw data. And thus, if the order is reversed, information regarding body mass is lost. 
+
+In `SQL`, the structure of the query is that `SELECT` must be written upfront, and so, even though the grouping variable can be written either in the fourth or fifth row of the code, it is somewhat disconnected from where the `COUNT` operation when written out. 
+
+For two-sided bounds, `SQL` has an extra function, `BETWEEN`. 
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  filter(body_mass_g > 4000) %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+::: {style="margin-bottom:80px;"}
+:::
+
+```{r}
+penguins %>% 
+  filter(body_mass_g< 4500, body_mass_g > 4000) %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE body_mass_g > 4000
+GROUP BY species
+```
+
+::: {style="margin-bottom:75px;"}
+:::
+
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE body_mass_g 
+BETWEEN 4000 AND 4500
+GROUP BY species
+```
+:::
+
+::: {style="margin-bottom:900px;"}
+:::
+
+
+## Categorical columns
+
+The major difference is that `R` uses double equal sign `==` whereas `SQL` uses a single equal sign `=` when subsetting categorical variables. 
+
+For multiple values, `R` uses %in% and a vector created using `c()`, whereas `SQL`  uses `IN` and `()` respectively.
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  filter(island == "Biscoe") %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+::: {style="margin-bottom:90px;"}
+:::
+
+```{r}
+penguins %>% 
+  filter(island %in% c("Biscoe", "Dream")) %>% 
+  group_by(species) %>% 
+  tally()
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE island = 'Biscoe'
+GROUP BY species
+```
+
+::: {style="margin-bottom:80px;"}
+:::
+
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE island IN ("Biscoe", "Dream")
+GROUP BY species
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Missing values 
+
+`R` uses `NA` to encode missing values. 
+
+`SQL` uses `NULL` to encode missing values, which is not to be confused with `NULL` in `R`. `NULL` in `R` is mainly used to represent the lists with zero length.
+
+One can use `is.na` in `R` to return a logical vector to subset on the data, whereas `SQL` uses `IS NULL`. The opposite operation could be performed uing `complete.cases` and `IS NOT NULL`, respectively for the two languages. 
+
+Below examines the entries with missing/complete values in the `sex` column of the data and tabulate the frequency of `species.` 
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  filter(is.na(sex)) %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+```{r}
+penguins %>% 
+  filter(complete.cases(sex)) %>% 
+  group_by(species) %>% 
+  tally()
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species,
+       COUNT(species) AS n
+FROM penguins
+WHERE sex IS NULL
+GROUP BY species
+```
+
+```{sql, connection=con}
+SELECT species,
+       COUNT(species) AS n
+FROM penguins
+WHERE sex IS NOT NULL
+GROUP BY species
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# String operations
+
+In `R`, the `stringr` package provides a consistent framework to perform various string operations. 
+In `SQL`, there are some similar functions too. 
+
+The first task aims to tally the species of penguins, for entries with island begin with the characters "Torg".
+
+The second task aims to tally the species of penguins, for entries with island's second character equal to "r".
+
+::: {.left}
+## `R`
+
+```{r}
+library(stringr)
+
+penguins %>%
+  filter(str_starts(island, "Torg")) %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+```{r}
+penguins %>%
+  filter(island %>% str_sub(2, 2) == "r") %>% 
+  group_by(species) %>% 
+  tally()
+```
+
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE island LIKE "Torg%"
+GROUP BY species
+```
+
+::: {style="margin-bottom:50px;"}
+:::
+
+```{sql, connection=con}
+SELECT species, 
+       COUNT(species) AS n
+FROM penguins
+WHERE island LIKE "_r%"
+GROUP BY species
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Summarisation
+
+Under the `dplyr` framework, summarisation is done using the `summarise` function. This provides a very consistent framwork to perform summarisation, compare to base `R`. 
+
+Similar operation is done using a range of aggregation functions in `SQL`. 
+
+Interestingly, in `SQL`, the aggregation functions automatically ignores the `NULL` values. Whereas in `R`, if there are any `NA` values, then any summary will return `NA` as a warning, unless `na.rm = TRUE` is specified.
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  filter(complete.cases(body_mass_g)) %>% 
+  summarise(
+    min_mass = min(body_mass_g),
+    mean_mass = mean(body_mass_g),
+    max_mass = max(body_mass_g),
+    sd_mass = sd(body_mass_g),
+    mean_mass_kg = mean(body_mass_g/1000))
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       MIN(body_mass_g) AS min_mass,
+       AVG(body_mass_g) AS mean_mass,
+       MAX(body_mass_g) AS max_mass,
+       STDEV(body_mass_g) AS sd_mass,
+       AVG(body_mass_g/1000.0) AS mass_kg
+FROM penguins
+GROUP BY species
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Sorting
+
+`R` uses `arrange` and `desc` to control the ordering. Whereas `SQL` uses `ORDER BY` and `DESC` respectively. 
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  tally() %>%
+  arrange(desc(n))
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       COUNT(*)*1.0/(SELECT COUNT(*) AS total FROM penguins) AS proportion
+FROM penguins
+GROUP BY species 
+ORDER BY proportion DESC
+```
+:::
+
+::: {style="margin-bottom:600px;"}
+:::
+
+
+# Percentage calculation (nested query)
+
+This is where the computations get a bit complicated and `dplyr` has an edge in my opinion. 
+
+In the code below, we are calculating the frequencies of penguins and the percentages. Notice that this percentage is calculated with respect to the entire penguin population, i.e. the total is needed. 
+
+For `R`, the total of all the penguins can be computed naturally. However, `SQL` requires a manual calculation of the total. In addition, `SQL` will return the same variable type as the input, so the multiplication of `1.0` is necessary to make the outputs come out as decimals.
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  tally() %>% 
+  mutate(proportion = n/sum(n)) %>% 
+  arrange(desc(proportion))
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT species, 
+       COUNT(*)*1.0/(SELECT COUNT(*) AS total FROM penguins) AS proportion
+FROM penguins
+GROUP BY species 
+ORDER BY proportion DESC
+```
+
+<!-- ```{sql, connection=con} -->
+<!-- WITH summary AS  -->
+<!-- (SELECT COUNT(*) AS total FROM penguins) -->
+<!-- SELECT species,  -->
+<!--        COUNT(*)*1.0/summary.total AS proportion -->
+<!-- FROM penguins, summary -->
+<!-- GROUP BY species  -->
+<!-- ORDER BY proportion -->
+<!-- ``` -->
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Filtering using summary statistics
+
+In `SQL`, the `WHERE` function cannot operate on summary statistics, this is a job for `HAVING`. However, in `R`, this is not a restriction.
+
+In the task below, we will group by the species and sex of the penguins and filter for penguins species/sex combo that has an average mass of greater than 4700 grams. The result should be Gentoo male penguins. 
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  filter(complete.cases(body_mass_g)) %>% 
+  group_by(species, sex) %>%
+  filter(mean(body_mass_g) >= 4700)
+  # summarise(mean(body_mass_g))
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT *
+FROM penguins
+WHERE body_mass_g IS NOT NULL
+GROUP BY species, sex
+HAVING AVG(body_mass_g) >= 4700;
 ```
 :::
 
