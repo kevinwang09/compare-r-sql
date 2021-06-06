@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Kevin Wang" />
+
+<meta name="date" content="2021-06-04" />
+
+<title>Basic operations</title>
+
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Compare R and SQL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Basic concepts
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/basic.html">Basic operations</a>
+    </li>
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/join.html">Join operations</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/kevinwang09/compare-r-sql">
+    <span class="fas fa-code"></span>
+     
+    Source code
+  </a>
+</li>
+<li>
+  <a href="https://kevinwang09.github.io">
+    <span class="fas fa-user-tie"></span>
+     
+    About me
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Basic operations</h1>
+<h4 class="author">Kevin Wang</h4>
+<h4 class="date">4 June 2021</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#data-preparation">Data preparation</a></li>
+<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
+<li><a href="#inner-join">Inner join</a></li>
+<li><a href="#aliasing">Aliasing</a></li>
+<li><a href="#multiple-inner-joins">Multiple inner joins</a></li>
+<li><a href="#renamingsubquery-during-join">Renaming/subquery during join</a></li>
+<li><a href="#case-when">Case when</a></li>
+</ul>
+</div>
+
+<div id="data-preparation" class="section level1">
+<h1>Data preparation</h1>
+<p>Evaluated only once to create a CSV file.</p>
+<pre class="r"><code>library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %&gt;% 
+                   dplyr::select(faa, name), 
+                 file = &quot;data/airports.csv&quot;)
+readr::write_csv(x = nycflights13::airlines, file = &quot;data/airlines.csv&quot;)
+readr::write_csv(x = nycflights13::flights %&gt;% 
+                   dplyr::slice(1:100) %&gt;% 
+                   dplyr::select(carrier, flight, tailnum, origin, dest), 
+                 file = &quot;data/flights.csv&quot;)</code></pre>
+</div>
+<div id="setting-up-connection-in-r" class="section level1">
+<h1>Setting up connection (in <code>R</code>)</h1>
+<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<pre class="r"><code>library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
+airports = readr::read_csv(file = &quot;data/airports.csv&quot;)
+airlines = readr::read_csv(file = &quot;data/airlines.csv&quot;)
+flights = readr::read_csv(file = &quot;data/flights.csv&quot;)
+dbListTables(con)</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code>dbWriteTable(con, &quot;airports&quot;, airports)
+dbWriteTable(con, &quot;airlines&quot;, airlines)
+dbWriteTable(con, &quot;flights&quot;, flights)
+dbListTables(con)</code></pre>
+<pre><code>## [1] &quot;airlines&quot; &quot;airports&quot; &quot;flights&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;airports&quot;)</code></pre>
+<pre><code>## [1] &quot;faa&quot;  &quot;name&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;airlines&quot;)</code></pre>
+<pre><code>## [1] &quot;carrier&quot; &quot;name&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;flights&quot;)</code></pre>
+<pre><code>## [1] &quot;carrier&quot; &quot;flight&quot;  &quot;tailnum&quot; &quot;origin&quot;  &quot;dest&quot;</code></pre>
+</div>
+<div id="inner-join" class="section level1">
+<h1>Inner join</h1>
+<p>I remembered at one point, joining data frames in <code>R</code> to be quite painful. Things changed a lot after <code>dplyr</code> gained popularity.</p>
+<p>Inner join in both language behave pretty similarly. The only difference is that the use of <code>by</code> in <code>R</code> and the use of <code>ON</code> in <code>SQL</code>. <code>R</code> allows a single specification of a common column when joining, whereas <code>SQL</code> needs explicitly specify the common column by name on both data. The way to avoid this is to use the function <code>USING (common_column_name)</code>.</p>
+<div id="r" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  inner_join(airlines, by = &quot;carrier&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["flight"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["tailnum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["origin"],"name":[4],"type":["chr"],"align":["left"]},{"label":["dest"],"name":[5],"type":["chr"],"align":["left"]},{"label":["name"],"name":[6],"type":["chr"],"align":["left"]}],"data":[{"1":"UA","2":"1545","3":"N14228","4":"EWR","5":"IAH","6":"United Air Lines Inc."},{"1":"UA","2":"1714","3":"N24211","4":"LGA","5":"IAH","6":"United Air Lines Inc."},{"1":"AA","2":"1141","3":"N619AA","4":"JFK","5":"MIA","6":"American Airlines Inc."},{"1":"B6","2":"725","3":"N804JB","4":"JFK","5":"BQN","6":"JetBlue Airways"},{"1":"DL","2":"461","3":"N668DN","4":"LGA","5":"ATL","6":"Delta Air Lines Inc."},{"1":"UA","2":"1696","3":"N39463","4":"EWR","5":"ORD","6":"United Air Lines Inc."},{"1":"B6","2":"507","3":"N516JB","4":"EWR","5":"FLL","6":"JetBlue Airways"},{"1":"EV","2":"5708","3":"N829AS","4":"LGA","5":"IAD","6":"ExpressJet Airlines Inc."},{"1":"B6","2":"79","3":"N593JB","4":"JFK","5":"MCO","6":"JetBlue Airways"},{"1":"AA","2":"301","3":"N3ALAA","4":"LGA","5":"ORD","6":"American Airlines Inc."},{"1":"B6","2":"49","3":"N793JB","4":"JFK","5":"PBI","6":"JetBlue Airways"},{"1":"B6","2":"71","3":"N657JB","4":"JFK","5":"TPA","6":"JetBlue Airways"},{"1":"UA","2":"194","3":"N29129","4":"JFK","5":"LAX","6":"United Air Lines Inc."},{"1":"UA","2":"1124","3":"N53441","4":"EWR","5":"SFO","6":"United Air Lines Inc."},{"1":"AA","2":"707","3":"N3DUAA","4":"LGA","5":"DFW","6":"American Airlines Inc."},{"1":"B6","2":"1806","3":"N708JB","4":"JFK","5":"BOS","6":"JetBlue Airways"},{"1":"UA","2":"1187","3":"N76515","4":"EWR","5":"LAS","6":"United Air Lines Inc."},{"1":"B6","2":"371","3":"N595JB","4":"LGA","5":"FLL","6":"JetBlue Airways"},{"1":"MQ","2":"4650","3":"N542MQ","4":"LGA","5":"ATL","6":"Envoy Air"},{"1":"B6","2":"343","3":"N644JB","4":"EWR","5":"PBI","6":"JetBlue Airways"},{"1":"DL","2":"1919","3":"N971DL","4":"LGA","5":"MSP","6":"Delta Air Lines Inc."},{"1":"MQ","2":"4401","3":"N730MQ","4":"LGA","5":"DTW","6":"Envoy Air"},{"1":"AA","2":"1895","3":"N633AA","4":"EWR","5":"MIA","6":"American Airlines Inc."},{"1":"DL","2":"1743","3":"N3739P","4":"JFK","5":"ATL","6":"Delta Air Lines Inc."},{"1":"UA","2":"1077","3":"N53442","4":"EWR","5":"MIA","6":"United Air Lines Inc."},{"1":"MQ","2":"3768","3":"N9EAMQ","4":"EWR","5":"ORD","6":"Envoy Air"},{"1":"UA","2":"303","3":"N532UA","4":"JFK","5":"SFO","6":"United Air Lines Inc."},{"1":"B6","2":"135","3":"N635JB","4":"JFK","5":"RSW","6":"JetBlue Airways"},{"1":"B6","2":"709","3":"N794JB","4":"JFK","5":"SJU","6":"JetBlue Airways"},{"1":"DL","2":"575","3":"N326NB","4":"EWR","5":"ATL","6":"Delta Air Lines Inc."},{"1":"US","2":"245","3":"N807AW","4":"EWR","5":"PHX","6":"US Airways Inc."},{"1":"AA","2":"1837","3":"N3EMAA","4":"LGA","5":"MIA","6":"American Airlines Inc."},{"1":"UA","2":"496","3":"N459UA","4":"LGA","5":"IAH","6":"United Air Lines Inc."},{"1":"EV","2":"4626","3":"N11107","4":"EWR","5":"MSP","6":"ExpressJet Airlines Inc."},{"1":"MQ","2":"4599","3":"N518MQ","4":"LGA","5":"MSP","6":"Envoy Air"},{"1":"US","2":"27","3":"N535UW","4":"JFK","5":"PHX","6":"US Airways Inc."},{"1":"AA","2":"413","3":"N3BAAA","4":"JFK","5":"SJU","6":"American Airlines Inc."},{"1":"UA","2":"1665","3":"N33289","4":"EWR","5":"LAX","6":"United Air Lines Inc."},{"1":"AA","2":"303","3":"N3CYAA","4":"LGA","5":"ORD","6":"American Airlines Inc."},{"1":"WN","2":"4646","3":"N273WN","4":"LGA","5":"BWI","6":"Southwest Airlines Co."},{"1":"US","2":"1019","3":"N426US","4":"EWR","5":"CLT","6":"US Airways Inc."},{"1":"EV","2":"4144","3":"N13553","4":"EWR","5":"IAD","6":"ExpressJet Airlines Inc."},{"1":"AA","2":"711","3":"N3GKAA","4":"LGA","5":"DFW","6":"American Airlines Inc."},{"1":"B6","2":"389","3":"N709JB","4":"LGA","5":"MCO","6":"JetBlue Airways"},{"1":"B6","2":"1002","3":"N805JB","4":"JFK","5":"BOS","6":"JetBlue Airways"},{"1":"UA","2":"556","3":"N497UA","4":"EWR","5":"PBI","6":"United Air Lines Inc."},{"1":"US","2":"926","3":"N178US","4":"EWR","5":"CLT","6":"US Airways Inc."},{"1":"UA","2":"1701","3":"N75435","4":"EWR","5":"FLL","6":"United Air Lines Inc."},{"1":"B6","2":"102","3":"N796JB","4":"JFK","5":"BUF","6":"JetBlue Airways"},{"1":"UA","2":"883","3":"N569UA","4":"LGA","5":"DEN","6":"United Air Lines Inc."},{"1":"UA","2":"1496","3":"N38727","4":"EWR","5":"SNA","6":"United Air Lines Inc."},{"1":"B6","2":"203","3":"N558JB","4":"JFK","5":"LAS","6":"JetBlue Airways"},{"1":"B6","2":"117","3":"N178JB","4":"JFK","5":"MSY","6":"JetBlue Airways"},{"1":"DL","2":"1383","3":"N327NW","4":"LGA","5":"PBI","6":"Delta Air Lines Inc."},{"1":"DL","2":"1415","3":"N3763D","4":"JFK","5":"SLC","6":"Delta Air Lines Inc."},{"1":"DL","2":"1865","3":"N705TW","4":"JFK","5":"SFO","6":"Delta Air Lines Inc."},{"1":"DL","2":"2003","3":"N997DL","4":"LGA","5":"MIA","6":"Delta Air Lines Inc."},{"1":"AA","2":"305","3":"N4WNAA","4":"LGA","5":"ORD","6":"American Airlines Inc."},{"1":"AA","2":"1815","3":"N5FMAA","4":"JFK","5":"MCO","6":"American Airlines Inc."},{"1":"MQ","2":"4534","3":"N722MQ","4":"LGA","5":"XNA","6":"Envoy Air"},{"1":"UA","2":"1115","3":"N24212","4":"EWR","5":"TPA","6":"United Air Lines Inc."},{"1":"DL","2":"1879","3":"N318NB","4":"LGA","5":"FLL","6":"Delta Air Lines Inc."},{"1":"DL","2":"1547","3":"N6703D","4":"LGA","5":"ATL","6":"Delta Air Lines Inc."},{"1":"VX","2":"399","3":"N627VA","4":"JFK","5":"LAX","6":"Virgin America"},{"1":"AA","2":"2279","3":"N3EKAA","4":"LGA","5":"MIA","6":"American Airlines Inc."},{"1":"B6","2":"981","3":"N646JB","4":"JFK","5":"FLL","6":"JetBlue Airways"},{"1":"DL","2":"831","3":"N998DL","4":"LGA","5":"DTW","6":"Delta Air Lines Inc."},{"1":"UA","2":"960","3":"N838UA","4":"EWR","5":"RSW","6":"United Air Lines Inc."},{"1":"UA","2":"1203","3":"N77296","4":"EWR","5":"SJU","6":"United Air Lines Inc."},{"1":"B6","2":"671","3":"N779JB","4":"JFK","5":"LAX","6":"JetBlue Airways"},{"1":"UA","2":"1092","3":"N26226","4":"LGA","5":"ORD","6":"United Air Lines Inc."},{"1":"B6","2":"715","3":"N651JB","4":"JFK","5":"SJU","6":"JetBlue Airways"},{"1":"AA","2":"825","3":"N3ETAA","4":"JFK","5":"FLL","6":"American Airlines Inc."},{"1":"UA","2":"544","3":"N841UA","4":"EWR","5":"ORD","6":"United Air Lines Inc."},{"1":"FL","2":"850","3":"N978AT","4":"LGA","5":"MKE","6":"AirTran Airways Corporation"},{"1":"B6","2":"987","3":"N562JB","4":"JFK","5":"MCO","6":"JetBlue Airways"},{"1":"UA","2":"962","3":"N514UA","4":"EWR","5":"PBI","6":"United Air Lines Inc."},{"1":"AA","2":"715","3":"N541AA","4":"LGA","5":"DFW","6":"American Airlines Inc."},{"1":"AS","2":"11","3":"N594AS","4":"EWR","5":"SEA","6":"Alaska Airlines Inc."},{"1":"AA","2":"2083","3":"N4WRAA","4":"EWR","5":"DFW","6":"American Airlines Inc."},{"1":"UA","2":"1162","3":"N37462","4":"EWR","5":"DEN","6":"United Air Lines Inc."},{"1":"UA","2":"473","3":"N488UA","4":"LGA","5":"IAH","6":"United Air Lines Inc."},{"1":"VX","2":"11","3":"N635VA","4":"JFK","5":"SFO","6":"Virgin America"},{"1":"B6","2":"20","3":"N304JB","4":"JFK","5":"ROC","6":"JetBlue Airways"},{"1":"B6","2":"1601","3":"N563JB","4":"LGA","5":"RSW","6":"JetBlue Airways"},{"1":"UA","2":"1111","3":"N37456","4":"EWR","5":"MCO","6":"United Air Lines Inc."},{"1":"B6","2":"44","3":"N552JB","4":"JFK","5":"SYR","6":"JetBlue Airways"},{"1":"B6","2":"643","3":"N625JB","4":"JFK","5":"SFO","6":"JetBlue Airways"},{"1":"AA","2":"309","3":"N4WPAA","4":"LGA","5":"ORD","6":"American Airlines Inc."},{"1":"UA","2":"1479","3":"N37408","4":"EWR","5":"IAH","6":"United Air Lines Inc."},{"1":"B6","2":"983","3":"N633JB","4":"LGA","5":"TPA","6":"JetBlue Airways"},{"1":"AA","2":"33","3":"N338AA","4":"JFK","5":"LAX","6":"American Airlines Inc."},{"1":"B6","2":"341","3":"N624JB","4":"JFK","5":"SRQ","6":"JetBlue Airways"},{"1":"DL","2":"495","3":"N3760C","4":"JFK","5":"SEA","6":"Delta Air Lines Inc."},{"1":"AA","2":"59","3":"N336AA","4":"JFK","5":"SFO","6":"American Airlines Inc."},{"1":"UA","2":"1668","3":"N24224","4":"EWR","5":"SFO","6":"United Air Lines Inc."},{"1":"MQ","2":"3737","3":"N508MQ","4":"EWR","5":"ORD","6":"Envoy Air"},{"1":"DL","2":"2263","3":"N325US","4":"LGA","5":"MCO","6":"Delta Air Lines Inc."},{"1":"UA","2":"477","3":"N511UA","4":"LGA","5":"DEN","6":"United Air Lines Inc."},{"1":"US","2":"1733","3":"N543UW","4":"LGA","5":"CLT","6":"US Airways Inc."}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT *
+FROM flights
+INNER JOIN airlines
+  ON flights.carrier = airlines.carrier</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">flight</th>
+<th align="left">tailnum</th>
+<th align="left">origin</th>
+<th align="left">dest</th>
+<th align="left">carrier</th>
+<th align="left">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">1545</td>
+<td align="left">N14228</td>
+<td align="left">EWR</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1714</td>
+<td align="left">N24211</td>
+<td align="left">LGA</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="right">1141</td>
+<td align="left">N619AA</td>
+<td align="left">JFK</td>
+<td align="left">MIA</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="right">725</td>
+<td align="left">N804JB</td>
+<td align="left">JFK</td>
+<td align="left">BQN</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="right">461</td>
+<td align="left">N668DN</td>
+<td align="left">LGA</td>
+<td align="left">ATL</td>
+<td align="left">DL</td>
+<td align="left">Delta Air Lines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1696</td>
+<td align="left">N39463</td>
+<td align="left">EWR</td>
+<td align="left">ORD</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">507</td>
+<td align="left">N516JB</td>
+<td align="left">EWR</td>
+<td align="left">FLL</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="right">5708</td>
+<td align="left">N829AS</td>
+<td align="left">LGA</td>
+<td align="left">IAD</td>
+<td align="left">EV</td>
+<td align="left">ExpressJet Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">79</td>
+<td align="left">N593JB</td>
+<td align="left">JFK</td>
+<td align="left">MCO</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">301</td>
+<td align="left">N3ALAA</td>
+<td align="left">LGA</td>
+<td align="left">ORD</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="aliasing" class="section level1">
+<h1>Aliasing</h1>
+<p>This is unique to <code>SQL</code>, as we can freely rename the naming of variables in <code>R</code>.</p>
+<pre class="sql"><code>SELECT *
+FROM flights as f
+INNER JOIN airlines AS a
+  ON f.carrier = a.carrier</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">flight</th>
+<th align="left">tailnum</th>
+<th align="left">origin</th>
+<th align="left">dest</th>
+<th align="left">carrier</th>
+<th align="left">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">1545</td>
+<td align="left">N14228</td>
+<td align="left">EWR</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1714</td>
+<td align="left">N24211</td>
+<td align="left">LGA</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="right">1141</td>
+<td align="left">N619AA</td>
+<td align="left">JFK</td>
+<td align="left">MIA</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="right">725</td>
+<td align="left">N804JB</td>
+<td align="left">JFK</td>
+<td align="left">BQN</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="right">461</td>
+<td align="left">N668DN</td>
+<td align="left">LGA</td>
+<td align="left">ATL</td>
+<td align="left">DL</td>
+<td align="left">Delta Air Lines Inc.</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1696</td>
+<td align="left">N39463</td>
+<td align="left">EWR</td>
+<td align="left">ORD</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">507</td>
+<td align="left">N516JB</td>
+<td align="left">EWR</td>
+<td align="left">FLL</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="right">5708</td>
+<td align="left">N829AS</td>
+<td align="left">LGA</td>
+<td align="left">IAD</td>
+<td align="left">EV</td>
+<td align="left">ExpressJet Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">79</td>
+<td align="left">N593JB</td>
+<td align="left">JFK</td>
+<td align="left">MCO</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">301</td>
+<td align="left">N3ALAA</td>
+<td align="left">LGA</td>
+<td align="left">ORD</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="multiple-inner-joins" class="section level1">
+<h1>Multiple inner joins</h1>
+<p>Multiple joins in both languages are straight forward.</p>
+<p>One of the annoying thing is that <code>SQL</code> allows columns with the same name, so some manual renaming is necessary to avoid confusion in the final output. We will do this in the next section.</p>
+<div id="r-1" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  inner_join(airlines, by = &quot;carrier&quot;) %&gt;% 
+  inner_join(airports, by = c(&quot;origin&quot; = &quot;faa&quot;))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["flight"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["tailnum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["origin"],"name":[4],"type":["chr"],"align":["left"]},{"label":["dest"],"name":[5],"type":["chr"],"align":["left"]},{"label":["name.x"],"name":[6],"type":["chr"],"align":["left"]},{"label":["name.y"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"UA","2":"1545","3":"N14228","4":"EWR","5":"IAH","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1714","3":"N24211","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"AA","2":"1141","3":"N619AA","4":"JFK","5":"MIA","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"725","3":"N804JB","4":"JFK","5":"BQN","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"461","3":"N668DN","4":"LGA","5":"ATL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"1696","3":"N39463","4":"EWR","5":"ORD","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"507","3":"N516JB","4":"EWR","5":"FLL","6":"JetBlue Airways","7":"Newark Liberty Intl"},{"1":"EV","2":"5708","3":"N829AS","4":"LGA","5":"IAD","6":"ExpressJet Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"79","3":"N593JB","4":"JFK","5":"MCO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"301","3":"N3ALAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"49","3":"N793JB","4":"JFK","5":"PBI","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"71","3":"N657JB","4":"JFK","5":"TPA","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"194","3":"N29129","4":"JFK","5":"LAX","6":"United Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1124","3":"N53441","4":"EWR","5":"SFO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"707","3":"N3DUAA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"1806","3":"N708JB","4":"JFK","5":"BOS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"1187","3":"N76515","4":"EWR","5":"LAS","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"371","3":"N595JB","4":"LGA","5":"FLL","6":"JetBlue Airways","7":"La Guardia"},{"1":"MQ","2":"4650","3":"N542MQ","4":"LGA","5":"ATL","6":"Envoy Air","7":"La Guardia"},{"1":"B6","2":"343","3":"N644JB","4":"EWR","5":"PBI","6":"JetBlue Airways","7":"Newark Liberty Intl"},{"1":"DL","2":"1919","3":"N971DL","4":"LGA","5":"MSP","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"MQ","2":"4401","3":"N730MQ","4":"LGA","5":"DTW","6":"Envoy Air","7":"La Guardia"},{"1":"AA","2":"1895","3":"N633AA","4":"EWR","5":"MIA","6":"American Airlines Inc.","7":"Newark Liberty Intl"},{"1":"DL","2":"1743","3":"N3739P","4":"JFK","5":"ATL","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1077","3":"N53442","4":"EWR","5":"MIA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"3768","3":"N9EAMQ","4":"EWR","5":"ORD","6":"Envoy Air","7":"Newark Liberty Intl"},{"1":"UA","2":"303","3":"N532UA","4":"JFK","5":"SFO","6":"United Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"135","3":"N635JB","4":"JFK","5":"RSW","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"709","3":"N794JB","4":"JFK","5":"SJU","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"575","3":"N326NB","4":"EWR","5":"ATL","6":"Delta Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"US","2":"245","3":"N807AW","4":"EWR","5":"PHX","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"1837","3":"N3EMAA","4":"LGA","5":"MIA","6":"American Airlines Inc.","7":"La Guardia"},{"1":"UA","2":"496","3":"N459UA","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"EV","2":"4626","3":"N11107","4":"EWR","5":"MSP","6":"ExpressJet Airlines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"4599","3":"N518MQ","4":"LGA","5":"MSP","6":"Envoy Air","7":"La Guardia"},{"1":"US","2":"27","3":"N535UW","4":"JFK","5":"PHX","6":"US Airways Inc.","7":"John F Kennedy Intl"},{"1":"AA","2":"413","3":"N3BAAA","4":"JFK","5":"SJU","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1665","3":"N33289","4":"EWR","5":"LAX","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"303","3":"N3CYAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"WN","2":"4646","3":"N273WN","4":"LGA","5":"BWI","6":"Southwest Airlines Co.","7":"La Guardia"},{"1":"US","2":"1019","3":"N426US","4":"EWR","5":"CLT","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"EV","2":"4144","3":"N13553","4":"EWR","5":"IAD","6":"ExpressJet Airlines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"711","3":"N3GKAA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"389","3":"N709JB","4":"LGA","5":"MCO","6":"JetBlue Airways","7":"La Guardia"},{"1":"B6","2":"1002","3":"N805JB","4":"JFK","5":"BOS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"556","3":"N497UA","4":"EWR","5":"PBI","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"US","2":"926","3":"N178US","4":"EWR","5":"CLT","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1701","3":"N75435","4":"EWR","5":"FLL","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"102","3":"N796JB","4":"JFK","5":"BUF","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"883","3":"N569UA","4":"LGA","5":"DEN","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"1496","3":"N38727","4":"EWR","5":"SNA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"203","3":"N558JB","4":"JFK","5":"LAS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"117","3":"N178JB","4":"JFK","5":"MSY","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"1383","3":"N327NW","4":"LGA","5":"PBI","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"DL","2":"1415","3":"N3763D","4":"JFK","5":"SLC","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"DL","2":"1865","3":"N705TW","4":"JFK","5":"SFO","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"DL","2":"2003","3":"N997DL","4":"LGA","5":"MIA","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"AA","2":"305","3":"N4WNAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"AA","2":"1815","3":"N5FMAA","4":"JFK","5":"MCO","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"MQ","2":"4534","3":"N722MQ","4":"LGA","5":"XNA","6":"Envoy Air","7":"La Guardia"},{"1":"UA","2":"1115","3":"N24212","4":"EWR","5":"TPA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"DL","2":"1879","3":"N318NB","4":"LGA","5":"FLL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"DL","2":"1547","3":"N6703D","4":"LGA","5":"ATL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"VX","2":"399","3":"N627VA","4":"JFK","5":"LAX","6":"Virgin America","7":"John F Kennedy Intl"},{"1":"AA","2":"2279","3":"N3EKAA","4":"LGA","5":"MIA","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"981","3":"N646JB","4":"JFK","5":"FLL","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"831","3":"N998DL","4":"LGA","5":"DTW","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"960","3":"N838UA","4":"EWR","5":"RSW","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1203","3":"N77296","4":"EWR","5":"SJU","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"671","3":"N779JB","4":"JFK","5":"LAX","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"1092","3":"N26226","4":"LGA","5":"ORD","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"B6","2":"715","3":"N651JB","4":"JFK","5":"SJU","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"825","3":"N3ETAA","4":"JFK","5":"FLL","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"544","3":"N841UA","4":"EWR","5":"ORD","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"FL","2":"850","3":"N978AT","4":"LGA","5":"MKE","6":"AirTran Airways Corporation","7":"La Guardia"},{"1":"B6","2":"987","3":"N562JB","4":"JFK","5":"MCO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"962","3":"N514UA","4":"EWR","5":"PBI","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"715","3":"N541AA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"AS","2":"11","3":"N594AS","4":"EWR","5":"SEA","6":"Alaska Airlines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"2083","3":"N4WRAA","4":"EWR","5":"DFW","6":"American Airlines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1162","3":"N37462","4":"EWR","5":"DEN","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"473","3":"N488UA","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"VX","2":"11","3":"N635VA","4":"JFK","5":"SFO","6":"Virgin America","7":"John F Kennedy Intl"},{"1":"B6","2":"20","3":"N304JB","4":"JFK","5":"ROC","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"1601","3":"N563JB","4":"LGA","5":"RSW","6":"JetBlue Airways","7":"La Guardia"},{"1":"UA","2":"1111","3":"N37456","4":"EWR","5":"MCO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"44","3":"N552JB","4":"JFK","5":"SYR","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"643","3":"N625JB","4":"JFK","5":"SFO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"309","3":"N4WPAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"UA","2":"1479","3":"N37408","4":"EWR","5":"IAH","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"983","3":"N633JB","4":"LGA","5":"TPA","6":"JetBlue Airways","7":"La Guardia"},{"1":"AA","2":"33","3":"N338AA","4":"JFK","5":"LAX","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"341","3":"N624JB","4":"JFK","5":"SRQ","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"495","3":"N3760C","4":"JFK","5":"SEA","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"AA","2":"59","3":"N336AA","4":"JFK","5":"SFO","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1668","3":"N24224","4":"EWR","5":"SFO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"3737","3":"N508MQ","4":"EWR","5":"ORD","6":"Envoy Air","7":"Newark Liberty Intl"},{"1":"DL","2":"2263","3":"N325US","4":"LGA","5":"MCO","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"477","3":"N511UA","4":"LGA","5":"DEN","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"US","2":"1733","3":"N543UW","4":"LGA","5":"CLT","6":"US Airways Inc.","7":"La Guardia"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql-1" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT *
+FROM flights
+INNER JOIN airlines
+  ON flights.carrier = airlines.carrier
+INNER JOIN airports
+  ON flights.origin = airports.faa</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">flight</th>
+<th align="left">tailnum</th>
+<th align="left">origin</th>
+<th align="left">dest</th>
+<th align="left">carrier</th>
+<th align="left">name</th>
+<th align="left">faa</th>
+<th align="left">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">1545</td>
+<td align="left">N14228</td>
+<td align="left">EWR</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1714</td>
+<td align="left">N24211</td>
+<td align="left">LGA</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="right">1141</td>
+<td align="left">N619AA</td>
+<td align="left">JFK</td>
+<td align="left">MIA</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="right">725</td>
+<td align="left">N804JB</td>
+<td align="left">JFK</td>
+<td align="left">BQN</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="right">461</td>
+<td align="left">N668DN</td>
+<td align="left">LGA</td>
+<td align="left">ATL</td>
+<td align="left">DL</td>
+<td align="left">Delta Air Lines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1696</td>
+<td align="left">N39463</td>
+<td align="left">EWR</td>
+<td align="left">ORD</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">507</td>
+<td align="left">N516JB</td>
+<td align="left">EWR</td>
+<td align="left">FLL</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="right">5708</td>
+<td align="left">N829AS</td>
+<td align="left">LGA</td>
+<td align="left">IAD</td>
+<td align="left">EV</td>
+<td align="left">ExpressJet Airlines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">79</td>
+<td align="left">N593JB</td>
+<td align="left">JFK</td>
+<td align="left">MCO</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">301</td>
+<td align="left">N3ALAA</td>
+<td align="left">LGA</td>
+<td align="left">ORD</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:1200px;">
+
+</div>
+</div>
+<div id="renamingsubquery-during-join" class="section level1">
+<h1>Renaming/subquery during join</h1>
+<p>This is where I think <code>R</code> can be slightly more flexible, as one can easily insert an extra row of code for renaming of columns rather than querying the data to rename. Though this is down to personal preference, as one could do <code>inner_join(data %&gt;% rename(...))</code> too in <code>R</code> for the same cumbersome effect.</p>
+<div id="r-2" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;%
+  inner_join(airlines, by = &quot;carrier&quot;) %&gt;%
+  dplyr::rename(carrier_name = name) %&gt;%
+  inner_join(airports, by = c(&quot;origin&quot; = &quot;faa&quot;)) %&gt;%
+  dplyr::rename(origin_name = name)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["flight"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["tailnum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["origin"],"name":[4],"type":["chr"],"align":["left"]},{"label":["dest"],"name":[5],"type":["chr"],"align":["left"]},{"label":["carrier_name"],"name":[6],"type":["chr"],"align":["left"]},{"label":["origin_name"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"UA","2":"1545","3":"N14228","4":"EWR","5":"IAH","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1714","3":"N24211","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"AA","2":"1141","3":"N619AA","4":"JFK","5":"MIA","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"725","3":"N804JB","4":"JFK","5":"BQN","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"461","3":"N668DN","4":"LGA","5":"ATL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"1696","3":"N39463","4":"EWR","5":"ORD","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"507","3":"N516JB","4":"EWR","5":"FLL","6":"JetBlue Airways","7":"Newark Liberty Intl"},{"1":"EV","2":"5708","3":"N829AS","4":"LGA","5":"IAD","6":"ExpressJet Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"79","3":"N593JB","4":"JFK","5":"MCO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"301","3":"N3ALAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"49","3":"N793JB","4":"JFK","5":"PBI","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"71","3":"N657JB","4":"JFK","5":"TPA","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"194","3":"N29129","4":"JFK","5":"LAX","6":"United Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1124","3":"N53441","4":"EWR","5":"SFO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"707","3":"N3DUAA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"1806","3":"N708JB","4":"JFK","5":"BOS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"1187","3":"N76515","4":"EWR","5":"LAS","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"371","3":"N595JB","4":"LGA","5":"FLL","6":"JetBlue Airways","7":"La Guardia"},{"1":"MQ","2":"4650","3":"N542MQ","4":"LGA","5":"ATL","6":"Envoy Air","7":"La Guardia"},{"1":"B6","2":"343","3":"N644JB","4":"EWR","5":"PBI","6":"JetBlue Airways","7":"Newark Liberty Intl"},{"1":"DL","2":"1919","3":"N971DL","4":"LGA","5":"MSP","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"MQ","2":"4401","3":"N730MQ","4":"LGA","5":"DTW","6":"Envoy Air","7":"La Guardia"},{"1":"AA","2":"1895","3":"N633AA","4":"EWR","5":"MIA","6":"American Airlines Inc.","7":"Newark Liberty Intl"},{"1":"DL","2":"1743","3":"N3739P","4":"JFK","5":"ATL","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1077","3":"N53442","4":"EWR","5":"MIA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"3768","3":"N9EAMQ","4":"EWR","5":"ORD","6":"Envoy Air","7":"Newark Liberty Intl"},{"1":"UA","2":"303","3":"N532UA","4":"JFK","5":"SFO","6":"United Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"135","3":"N635JB","4":"JFK","5":"RSW","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"709","3":"N794JB","4":"JFK","5":"SJU","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"575","3":"N326NB","4":"EWR","5":"ATL","6":"Delta Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"US","2":"245","3":"N807AW","4":"EWR","5":"PHX","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"1837","3":"N3EMAA","4":"LGA","5":"MIA","6":"American Airlines Inc.","7":"La Guardia"},{"1":"UA","2":"496","3":"N459UA","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"EV","2":"4626","3":"N11107","4":"EWR","5":"MSP","6":"ExpressJet Airlines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"4599","3":"N518MQ","4":"LGA","5":"MSP","6":"Envoy Air","7":"La Guardia"},{"1":"US","2":"27","3":"N535UW","4":"JFK","5":"PHX","6":"US Airways Inc.","7":"John F Kennedy Intl"},{"1":"AA","2":"413","3":"N3BAAA","4":"JFK","5":"SJU","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1665","3":"N33289","4":"EWR","5":"LAX","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"303","3":"N3CYAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"WN","2":"4646","3":"N273WN","4":"LGA","5":"BWI","6":"Southwest Airlines Co.","7":"La Guardia"},{"1":"US","2":"1019","3":"N426US","4":"EWR","5":"CLT","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"EV","2":"4144","3":"N13553","4":"EWR","5":"IAD","6":"ExpressJet Airlines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"711","3":"N3GKAA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"389","3":"N709JB","4":"LGA","5":"MCO","6":"JetBlue Airways","7":"La Guardia"},{"1":"B6","2":"1002","3":"N805JB","4":"JFK","5":"BOS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"556","3":"N497UA","4":"EWR","5":"PBI","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"US","2":"926","3":"N178US","4":"EWR","5":"CLT","6":"US Airways Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1701","3":"N75435","4":"EWR","5":"FLL","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"102","3":"N796JB","4":"JFK","5":"BUF","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"883","3":"N569UA","4":"LGA","5":"DEN","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"1496","3":"N38727","4":"EWR","5":"SNA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"203","3":"N558JB","4":"JFK","5":"LAS","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"117","3":"N178JB","4":"JFK","5":"MSY","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"1383","3":"N327NW","4":"LGA","5":"PBI","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"DL","2":"1415","3":"N3763D","4":"JFK","5":"SLC","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"DL","2":"1865","3":"N705TW","4":"JFK","5":"SFO","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"DL","2":"2003","3":"N997DL","4":"LGA","5":"MIA","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"AA","2":"305","3":"N4WNAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"AA","2":"1815","3":"N5FMAA","4":"JFK","5":"MCO","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"MQ","2":"4534","3":"N722MQ","4":"LGA","5":"XNA","6":"Envoy Air","7":"La Guardia"},{"1":"UA","2":"1115","3":"N24212","4":"EWR","5":"TPA","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"DL","2":"1879","3":"N318NB","4":"LGA","5":"FLL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"DL","2":"1547","3":"N6703D","4":"LGA","5":"ATL","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"VX","2":"399","3":"N627VA","4":"JFK","5":"LAX","6":"Virgin America","7":"John F Kennedy Intl"},{"1":"AA","2":"2279","3":"N3EKAA","4":"LGA","5":"MIA","6":"American Airlines Inc.","7":"La Guardia"},{"1":"B6","2":"981","3":"N646JB","4":"JFK","5":"FLL","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"831","3":"N998DL","4":"LGA","5":"DTW","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"960","3":"N838UA","4":"EWR","5":"RSW","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1203","3":"N77296","4":"EWR","5":"SJU","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"671","3":"N779JB","4":"JFK","5":"LAX","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"1092","3":"N26226","4":"LGA","5":"ORD","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"B6","2":"715","3":"N651JB","4":"JFK","5":"SJU","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"825","3":"N3ETAA","4":"JFK","5":"FLL","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"544","3":"N841UA","4":"EWR","5":"ORD","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"FL","2":"850","3":"N978AT","4":"LGA","5":"MKE","6":"AirTran Airways Corporation","7":"La Guardia"},{"1":"B6","2":"987","3":"N562JB","4":"JFK","5":"MCO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"UA","2":"962","3":"N514UA","4":"EWR","5":"PBI","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"715","3":"N541AA","4":"LGA","5":"DFW","6":"American Airlines Inc.","7":"La Guardia"},{"1":"AS","2":"11","3":"N594AS","4":"EWR","5":"SEA","6":"Alaska Airlines Inc.","7":"Newark Liberty Intl"},{"1":"AA","2":"2083","3":"N4WRAA","4":"EWR","5":"DFW","6":"American Airlines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"1162","3":"N37462","4":"EWR","5":"DEN","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"UA","2":"473","3":"N488UA","4":"LGA","5":"IAH","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"VX","2":"11","3":"N635VA","4":"JFK","5":"SFO","6":"Virgin America","7":"John F Kennedy Intl"},{"1":"B6","2":"20","3":"N304JB","4":"JFK","5":"ROC","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"1601","3":"N563JB","4":"LGA","5":"RSW","6":"JetBlue Airways","7":"La Guardia"},{"1":"UA","2":"1111","3":"N37456","4":"EWR","5":"MCO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"44","3":"N552JB","4":"JFK","5":"SYR","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"B6","2":"643","3":"N625JB","4":"JFK","5":"SFO","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"AA","2":"309","3":"N4WPAA","4":"LGA","5":"ORD","6":"American Airlines Inc.","7":"La Guardia"},{"1":"UA","2":"1479","3":"N37408","4":"EWR","5":"IAH","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"B6","2":"983","3":"N633JB","4":"LGA","5":"TPA","6":"JetBlue Airways","7":"La Guardia"},{"1":"AA","2":"33","3":"N338AA","4":"JFK","5":"LAX","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"B6","2":"341","3":"N624JB","4":"JFK","5":"SRQ","6":"JetBlue Airways","7":"John F Kennedy Intl"},{"1":"DL","2":"495","3":"N3760C","4":"JFK","5":"SEA","6":"Delta Air Lines Inc.","7":"John F Kennedy Intl"},{"1":"AA","2":"59","3":"N336AA","4":"JFK","5":"SFO","6":"American Airlines Inc.","7":"John F Kennedy Intl"},{"1":"UA","2":"1668","3":"N24224","4":"EWR","5":"SFO","6":"United Air Lines Inc.","7":"Newark Liberty Intl"},{"1":"MQ","2":"3737","3":"N508MQ","4":"EWR","5":"ORD","6":"Envoy Air","7":"Newark Liberty Intl"},{"1":"DL","2":"2263","3":"N325US","4":"LGA","5":"MCO","6":"Delta Air Lines Inc.","7":"La Guardia"},{"1":"UA","2":"477","3":"N511UA","4":"LGA","5":"DEN","6":"United Air Lines Inc.","7":"La Guardia"},{"1":"US","2":"1733","3":"N543UW","4":"LGA","5":"CLT","6":"US Airways Inc.","7":"La Guardia"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql-2" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT *
+FROM flights
+INNER JOIN (SELECT carrier, name AS carrier_name FROM airlines) as rap
+  ON flights.carrier = rap.carrier
+INNER JOIN (SELECT faa, name AS airport_name FROM airports) as ral
+  ON flights.origin = ral.faa</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">flight</th>
+<th align="left">tailnum</th>
+<th align="left">origin</th>
+<th align="left">dest</th>
+<th align="left">carrier</th>
+<th align="left">carrier_name</th>
+<th align="left">faa</th>
+<th align="left">airport_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">1545</td>
+<td align="left">N14228</td>
+<td align="left">EWR</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1714</td>
+<td align="left">N24211</td>
+<td align="left">LGA</td>
+<td align="left">IAH</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="right">1141</td>
+<td align="left">N619AA</td>
+<td align="left">JFK</td>
+<td align="left">MIA</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="right">725</td>
+<td align="left">N804JB</td>
+<td align="left">JFK</td>
+<td align="left">BQN</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="right">461</td>
+<td align="left">N668DN</td>
+<td align="left">LGA</td>
+<td align="left">ATL</td>
+<td align="left">DL</td>
+<td align="left">Delta Air Lines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1696</td>
+<td align="left">N39463</td>
+<td align="left">EWR</td>
+<td align="left">ORD</td>
+<td align="left">UA</td>
+<td align="left">United Air Lines Inc.</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">507</td>
+<td align="left">N516JB</td>
+<td align="left">EWR</td>
+<td align="left">FLL</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">EWR</td>
+<td align="left">Newark Liberty Intl</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="right">5708</td>
+<td align="left">N829AS</td>
+<td align="left">LGA</td>
+<td align="left">IAD</td>
+<td align="left">EV</td>
+<td align="left">ExpressJet Airlines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">79</td>
+<td align="left">N593JB</td>
+<td align="left">JFK</td>
+<td align="left">MCO</td>
+<td align="left">B6</td>
+<td align="left">JetBlue Airways</td>
+<td align="left">JFK</td>
+<td align="left">John F Kennedy Intl</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">301</td>
+<td align="left">N3ALAA</td>
+<td align="left">LGA</td>
+<td align="left">ORD</td>
+<td align="left">AA</td>
+<td align="left">American Airlines Inc.</td>
+<td align="left">LGA</td>
+<td align="left">La Guardia</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="case-when" class="section level1">
+<h1>Case when</h1>
+<p>Both languages behave similarly.</p>
+<div id="r-3" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  mutate(
+    runways = case_when(
+      origin == &quot;JFK&quot; ~ 4,
+      origin == &quot;EWR&quot; ~ 3,
+      origin == &quot;LGA&quot; ~ 2,
+      TRUE ~ 0))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["flight"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["tailnum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["origin"],"name":[4],"type":["chr"],"align":["left"]},{"label":["dest"],"name":[5],"type":["chr"],"align":["left"]},{"label":["runways"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"UA","2":"1545","3":"N14228","4":"EWR","5":"IAH","6":"3"},{"1":"UA","2":"1714","3":"N24211","4":"LGA","5":"IAH","6":"2"},{"1":"AA","2":"1141","3":"N619AA","4":"JFK","5":"MIA","6":"4"},{"1":"B6","2":"725","3":"N804JB","4":"JFK","5":"BQN","6":"4"},{"1":"DL","2":"461","3":"N668DN","4":"LGA","5":"ATL","6":"2"},{"1":"UA","2":"1696","3":"N39463","4":"EWR","5":"ORD","6":"3"},{"1":"B6","2":"507","3":"N516JB","4":"EWR","5":"FLL","6":"3"},{"1":"EV","2":"5708","3":"N829AS","4":"LGA","5":"IAD","6":"2"},{"1":"B6","2":"79","3":"N593JB","4":"JFK","5":"MCO","6":"4"},{"1":"AA","2":"301","3":"N3ALAA","4":"LGA","5":"ORD","6":"2"},{"1":"B6","2":"49","3":"N793JB","4":"JFK","5":"PBI","6":"4"},{"1":"B6","2":"71","3":"N657JB","4":"JFK","5":"TPA","6":"4"},{"1":"UA","2":"194","3":"N29129","4":"JFK","5":"LAX","6":"4"},{"1":"UA","2":"1124","3":"N53441","4":"EWR","5":"SFO","6":"3"},{"1":"AA","2":"707","3":"N3DUAA","4":"LGA","5":"DFW","6":"2"},{"1":"B6","2":"1806","3":"N708JB","4":"JFK","5":"BOS","6":"4"},{"1":"UA","2":"1187","3":"N76515","4":"EWR","5":"LAS","6":"3"},{"1":"B6","2":"371","3":"N595JB","4":"LGA","5":"FLL","6":"2"},{"1":"MQ","2":"4650","3":"N542MQ","4":"LGA","5":"ATL","6":"2"},{"1":"B6","2":"343","3":"N644JB","4":"EWR","5":"PBI","6":"3"},{"1":"DL","2":"1919","3":"N971DL","4":"LGA","5":"MSP","6":"2"},{"1":"MQ","2":"4401","3":"N730MQ","4":"LGA","5":"DTW","6":"2"},{"1":"AA","2":"1895","3":"N633AA","4":"EWR","5":"MIA","6":"3"},{"1":"DL","2":"1743","3":"N3739P","4":"JFK","5":"ATL","6":"4"},{"1":"UA","2":"1077","3":"N53442","4":"EWR","5":"MIA","6":"3"},{"1":"MQ","2":"3768","3":"N9EAMQ","4":"EWR","5":"ORD","6":"3"},{"1":"UA","2":"303","3":"N532UA","4":"JFK","5":"SFO","6":"4"},{"1":"B6","2":"135","3":"N635JB","4":"JFK","5":"RSW","6":"4"},{"1":"B6","2":"709","3":"N794JB","4":"JFK","5":"SJU","6":"4"},{"1":"DL","2":"575","3":"N326NB","4":"EWR","5":"ATL","6":"3"},{"1":"US","2":"245","3":"N807AW","4":"EWR","5":"PHX","6":"3"},{"1":"AA","2":"1837","3":"N3EMAA","4":"LGA","5":"MIA","6":"2"},{"1":"UA","2":"496","3":"N459UA","4":"LGA","5":"IAH","6":"2"},{"1":"EV","2":"4626","3":"N11107","4":"EWR","5":"MSP","6":"3"},{"1":"MQ","2":"4599","3":"N518MQ","4":"LGA","5":"MSP","6":"2"},{"1":"US","2":"27","3":"N535UW","4":"JFK","5":"PHX","6":"4"},{"1":"AA","2":"413","3":"N3BAAA","4":"JFK","5":"SJU","6":"4"},{"1":"UA","2":"1665","3":"N33289","4":"EWR","5":"LAX","6":"3"},{"1":"AA","2":"303","3":"N3CYAA","4":"LGA","5":"ORD","6":"2"},{"1":"WN","2":"4646","3":"N273WN","4":"LGA","5":"BWI","6":"2"},{"1":"US","2":"1019","3":"N426US","4":"EWR","5":"CLT","6":"3"},{"1":"EV","2":"4144","3":"N13553","4":"EWR","5":"IAD","6":"3"},{"1":"AA","2":"711","3":"N3GKAA","4":"LGA","5":"DFW","6":"2"},{"1":"B6","2":"389","3":"N709JB","4":"LGA","5":"MCO","6":"2"},{"1":"B6","2":"1002","3":"N805JB","4":"JFK","5":"BOS","6":"4"},{"1":"UA","2":"556","3":"N497UA","4":"EWR","5":"PBI","6":"3"},{"1":"US","2":"926","3":"N178US","4":"EWR","5":"CLT","6":"3"},{"1":"UA","2":"1701","3":"N75435","4":"EWR","5":"FLL","6":"3"},{"1":"B6","2":"102","3":"N796JB","4":"JFK","5":"BUF","6":"4"},{"1":"UA","2":"883","3":"N569UA","4":"LGA","5":"DEN","6":"2"},{"1":"UA","2":"1496","3":"N38727","4":"EWR","5":"SNA","6":"3"},{"1":"B6","2":"203","3":"N558JB","4":"JFK","5":"LAS","6":"4"},{"1":"B6","2":"117","3":"N178JB","4":"JFK","5":"MSY","6":"4"},{"1":"DL","2":"1383","3":"N327NW","4":"LGA","5":"PBI","6":"2"},{"1":"DL","2":"1415","3":"N3763D","4":"JFK","5":"SLC","6":"4"},{"1":"DL","2":"1865","3":"N705TW","4":"JFK","5":"SFO","6":"4"},{"1":"DL","2":"2003","3":"N997DL","4":"LGA","5":"MIA","6":"2"},{"1":"AA","2":"305","3":"N4WNAA","4":"LGA","5":"ORD","6":"2"},{"1":"AA","2":"1815","3":"N5FMAA","4":"JFK","5":"MCO","6":"4"},{"1":"MQ","2":"4534","3":"N722MQ","4":"LGA","5":"XNA","6":"2"},{"1":"UA","2":"1115","3":"N24212","4":"EWR","5":"TPA","6":"3"},{"1":"DL","2":"1879","3":"N318NB","4":"LGA","5":"FLL","6":"2"},{"1":"DL","2":"1547","3":"N6703D","4":"LGA","5":"ATL","6":"2"},{"1":"VX","2":"399","3":"N627VA","4":"JFK","5":"LAX","6":"4"},{"1":"AA","2":"2279","3":"N3EKAA","4":"LGA","5":"MIA","6":"2"},{"1":"B6","2":"981","3":"N646JB","4":"JFK","5":"FLL","6":"4"},{"1":"DL","2":"831","3":"N998DL","4":"LGA","5":"DTW","6":"2"},{"1":"UA","2":"960","3":"N838UA","4":"EWR","5":"RSW","6":"3"},{"1":"UA","2":"1203","3":"N77296","4":"EWR","5":"SJU","6":"3"},{"1":"B6","2":"671","3":"N779JB","4":"JFK","5":"LAX","6":"4"},{"1":"UA","2":"1092","3":"N26226","4":"LGA","5":"ORD","6":"2"},{"1":"B6","2":"715","3":"N651JB","4":"JFK","5":"SJU","6":"4"},{"1":"AA","2":"825","3":"N3ETAA","4":"JFK","5":"FLL","6":"4"},{"1":"UA","2":"544","3":"N841UA","4":"EWR","5":"ORD","6":"3"},{"1":"FL","2":"850","3":"N978AT","4":"LGA","5":"MKE","6":"2"},{"1":"B6","2":"987","3":"N562JB","4":"JFK","5":"MCO","6":"4"},{"1":"UA","2":"962","3":"N514UA","4":"EWR","5":"PBI","6":"3"},{"1":"AA","2":"715","3":"N541AA","4":"LGA","5":"DFW","6":"2"},{"1":"AS","2":"11","3":"N594AS","4":"EWR","5":"SEA","6":"3"},{"1":"AA","2":"2083","3":"N4WRAA","4":"EWR","5":"DFW","6":"3"},{"1":"UA","2":"1162","3":"N37462","4":"EWR","5":"DEN","6":"3"},{"1":"UA","2":"473","3":"N488UA","4":"LGA","5":"IAH","6":"2"},{"1":"VX","2":"11","3":"N635VA","4":"JFK","5":"SFO","6":"4"},{"1":"B6","2":"20","3":"N304JB","4":"JFK","5":"ROC","6":"4"},{"1":"B6","2":"1601","3":"N563JB","4":"LGA","5":"RSW","6":"2"},{"1":"UA","2":"1111","3":"N37456","4":"EWR","5":"MCO","6":"3"},{"1":"B6","2":"44","3":"N552JB","4":"JFK","5":"SYR","6":"4"},{"1":"B6","2":"643","3":"N625JB","4":"JFK","5":"SFO","6":"4"},{"1":"AA","2":"309","3":"N4WPAA","4":"LGA","5":"ORD","6":"2"},{"1":"UA","2":"1479","3":"N37408","4":"EWR","5":"IAH","6":"3"},{"1":"B6","2":"983","3":"N633JB","4":"LGA","5":"TPA","6":"2"},{"1":"AA","2":"33","3":"N338AA","4":"JFK","5":"LAX","6":"4"},{"1":"B6","2":"341","3":"N624JB","4":"JFK","5":"SRQ","6":"4"},{"1":"DL","2":"495","3":"N3760C","4":"JFK","5":"SEA","6":"4"},{"1":"AA","2":"59","3":"N336AA","4":"JFK","5":"SFO","6":"4"},{"1":"UA","2":"1668","3":"N24224","4":"EWR","5":"SFO","6":"3"},{"1":"MQ","2":"3737","3":"N508MQ","4":"EWR","5":"ORD","6":"3"},{"1":"DL","2":"2263","3":"N325US","4":"LGA","5":"MCO","6":"2"},{"1":"UA","2":"477","3":"N511UA","4":"LGA","5":"DEN","6":"2"},{"1":"US","2":"1733","3":"N543UW","4":"LGA","5":"CLT","6":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql-3" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT *, 
+  CASE WHEN origin = &quot;JFK&quot; THEN 4
+       WHEN origin = &quot;EWR&quot; THEN 3
+       WHEN origin = &quot;LGA&quot; THEN 2
+       ELSE 0 END
+       AS runways
+FROM flights
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">flight</th>
+<th align="left">tailnum</th>
+<th align="left">origin</th>
+<th align="left">dest</th>
+<th align="right">runways</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">1545</td>
+<td align="left">N14228</td>
+<td align="left">EWR</td>
+<td align="left">IAH</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1714</td>
+<td align="left">N24211</td>
+<td align="left">LGA</td>
+<td align="left">IAH</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="right">1141</td>
+<td align="left">N619AA</td>
+<td align="left">JFK</td>
+<td align="left">MIA</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="right">725</td>
+<td align="left">N804JB</td>
+<td align="left">JFK</td>
+<td align="left">BQN</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="right">461</td>
+<td align="left">N668DN</td>
+<td align="left">LGA</td>
+<td align="left">ATL</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">UA</td>
+<td align="right">1696</td>
+<td align="left">N39463</td>
+<td align="left">EWR</td>
+<td align="left">ORD</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">507</td>
+<td align="left">N516JB</td>
+<td align="left">EWR</td>
+<td align="left">FLL</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="right">5708</td>
+<td align="left">N829AS</td>
+<td align="left">LGA</td>
+<td align="left">IAD</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">79</td>
+<td align="left">N593JB</td>
+<td align="left">JFK</td>
+<td align="left">MCO</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">301</td>
+<td align="left">N3ALAA</td>
+<td align="left">LGA</td>
+<td align="left">ORD</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -7,6 +7,8 @@ navbar:
       menu:
         - text: Basic operations
           href: https://kevinwang09.github.io/compare-r-sql/basic.html
+        - text: Join operations
+          href: https://kevinwang09.github.io/compare-r-sql/join.html
   right:
     - text: "Source code"
       icon: fa-code
@@ -21,3 +23,6 @@ output:
     theme: paper
     highlight: textmate
     css: "style.css"
+    df_print: paged
+    toc: true
+    toc_depth: 1

@@ -1,0 +1,189 @@
+---
+title: "Basic operations"
+author: "Kevin Wang"
+date: "4 June 2021"
+output: html_document
+---
+
+# Data preparation 
+
+Evaluated only once to create a CSV file.
+
+```{r, eval = FALSE}
+library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %>% 
+                   dplyr::select(faa, name), 
+                 file = "data/airports.csv")
+readr::write_csv(x = nycflights13::airlines, file = "data/airlines.csv")
+readr::write_csv(x = nycflights13::flights %>% 
+                   dplyr::slice(1:100) %>% 
+                   dplyr::select(carrier, flight, tailnum, origin, dest), 
+                 file = "data/flights.csv")
+```
+
+# Setting up connection (in `R`)
+
+This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database. 
+
+The print methods for `R` is different to that of `SQL`. 
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+airports = readr::read_csv(file = "data/airports.csv")
+airlines = readr::read_csv(file = "data/airlines.csv")
+flights = readr::read_csv(file = "data/flights.csv")
+dbListTables(con)
+
+dbWriteTable(con, "airports", airports)
+dbWriteTable(con, "airlines", airlines)
+dbWriteTable(con, "flights", flights)
+dbListTables(con)
+dbListFields(con, "airports")
+dbListFields(con, "airlines")
+dbListFields(con, "flights")
+```
+
+# Inner join
+
+I remembered at one point, joining data frames in `R` to be quite painful. Things changed a lot after `dplyr` gained popularity. 
+
+Inner join in both language behave pretty similarly. The only difference is that the use of `by` in `R` and the use of `ON` in `SQL`. `R` allows a single specification of a common column when joining, whereas `SQL` needs explicitly specify the common column by name on both data. The way to avoid this is to use the function `USING (common_column_name)`. 
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  inner_join(airlines, by = "carrier")
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT *
+FROM flights
+INNER JOIN airlines
+  ON flights.carrier = airlines.carrier
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Aliasing
+
+This is unique to `SQL`, as we can freely rename the naming of variables in `R`. 
+
+```{sql, connection=con}
+SELECT *
+FROM flights as f
+INNER JOIN airlines AS a
+  ON f.carrier = a.carrier
+```
+
+# Multiple inner joins 
+
+Multiple joins in both languages are straight forward. 
+
+One of the annoying thing is that `SQL` allows columns with the same name, so some manual renaming is necessary to avoid confusion in the final output. We will do this in the next section.
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  inner_join(airlines, by = "carrier") %>% 
+  inner_join(airports, by = c("origin" = "faa"))
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT *
+FROM flights
+INNER JOIN airlines
+  ON flights.carrier = airlines.carrier
+INNER JOIN airports
+  ON flights.origin = airports.faa
+```
+:::
+
+::: {style="margin-bottom:1200px;"}
+:::
+
+# Renaming/subquery during join 
+
+This is where I think `R` can be slightly more flexible, as one can easily insert an extra row of code for renaming of columns rather than querying the data to rename. Though this is down to personal preference, as one could do `inner_join(data %>% rename(...))` too in `R` for the same cumbersome effect. 
+
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>%
+  inner_join(airlines, by = "carrier") %>%
+  dplyr::rename(carrier_name = name) %>%
+  inner_join(airports, by = c("origin" = "faa")) %>%
+  dplyr::rename(origin_name = name)
+```
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, connection=con}
+SELECT *
+FROM flights
+INNER JOIN (SELECT carrier, name AS carrier_name FROM airlines) as rap
+  ON flights.carrier = rap.carrier
+INNER JOIN (SELECT faa, name AS airport_name FROM airports) as ral
+  ON flights.origin = ral.faa
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Case when
+
+Both languages behave similarly. 
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  mutate(
+    runways = case_when(
+      origin == "JFK" ~ 4,
+      origin == "EWR" ~ 3,
+      origin == "LGA" ~ 2,
+      TRUE ~ 0))
+```
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, connection=con}
+SELECT *, 
+  CASE WHEN origin = "JFK" THEN 4
+       WHEN origin = "EWR" THEN 3
+       WHEN origin = "LGA" THEN 2
+       ELSE 0 END
+       AS runways
+FROM flights
+
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+

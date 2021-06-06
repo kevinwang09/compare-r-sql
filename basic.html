@@ -258,6 +258,9 @@ $(document).ready(function () {
     <li>
       <a href="https://kevinwang09.github.io/compare-r-sql/basic.html">Basic operations</a>
     </li>
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/join.html">Join operations</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -302,7 +305,7 @@ $(document).ready(function () {
 <li><a href="#string-operations">String operations</a></li>
 <li><a href="#summarisation">Summarisation</a></li>
 <li><a href="#sorting">Sorting</a></li>
-<li><a href="#percentage-calculation-nested-query">Percentage calculation (nested query)</a></li>
+<li><a href="#proportion-calculation">Proportion calculation</a></li>
 <li><a href="#filtering-using-summary-statistics">Filtering using summary statistics</a></li>
 </ul>
 </div>
@@ -697,6 +700,297 @@ GROUP BY species;</code></pre>
 </div>
 <div id="filtering" class="section level1">
 <h1>Filtering</h1>
+<div id="top-rows" class="section level2">
+<h2>Top rows</h2>
+</div>
+<div id="r-4" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>penguins %&gt;% 
+  slice(1:10)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["species"],"name":[1],"type":["chr"],"align":["left"]},{"label":["island"],"name":[2],"type":["chr"],"align":["left"]},{"label":["bill_length_mm"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bill_depth_mm"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["flipper_length_mm"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["body_mass_g"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sex"],"name":[7],"type":["chr"],"align":["left"]},{"label":["year"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Adelie","2":"Torgersen","3":"39.1","4":"18.7","5":"181","6":"3750","7":"male","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"39.5","4":"17.4","5":"186","6":"3800","7":"female","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"40.3","4":"18.0","5":"195","6":"3250","7":"female","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"NA","4":"NA","5":"NA","6":"NA","7":"NA","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"36.7","4":"19.3","5":"193","6":"3450","7":"female","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"39.3","4":"20.6","5":"190","6":"3650","7":"male","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"38.9","4":"17.8","5":"181","6":"3625","7":"female","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"39.2","4":"19.6","5":"195","6":"4675","7":"male","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"34.1","4":"18.1","5":"193","6":"3475","7":"NA","8":"2007"},{"1":"Adelie","2":"Torgersen","3":"42.0","4":"20.2","5":"190","6":"4250","7":"NA","8":"2007"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>penguins %&gt;% 
+  top_n(10, body_mass_g)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["species"],"name":[1],"type":["chr"],"align":["left"]},{"label":["island"],"name":[2],"type":["chr"],"align":["left"]},{"label":["bill_length_mm"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bill_depth_mm"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["flipper_length_mm"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["body_mass_g"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sex"],"name":[7],"type":["chr"],"align":["left"]},{"label":["year"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Gentoo","2":"Biscoe","3":"48.4","4":"14.6","5":"213","6":"5850","7":"male","8":"2007"},{"1":"Gentoo","2":"Biscoe","3":"49.3","4":"15.7","5":"217","6":"5850","7":"male","8":"2007"},{"1":"Gentoo","2":"Biscoe","3":"49.2","4":"15.2","5":"221","6":"6300","7":"male","8":"2007"},{"1":"Gentoo","2":"Biscoe","3":"59.6","4":"17.0","5":"230","6":"6050","7":"male","8":"2007"},{"1":"Gentoo","2":"Biscoe","3":"49.5","4":"16.2","5":"229","6":"5800","7":"male","8":"2008"},{"1":"Gentoo","2":"Biscoe","3":"48.6","4":"16.0","5":"230","6":"5800","7":"male","8":"2008"},{"1":"Gentoo","2":"Biscoe","3":"51.1","4":"16.3","5":"220","6":"6000","7":"male","8":"2008"},{"1":"Gentoo","2":"Biscoe","3":"45.2","4":"16.4","5":"223","6":"5950","7":"male","8":"2008"},{"1":"Gentoo","2":"Biscoe","3":"49.8","4":"15.9","5":"229","6":"5950","7":"male","8":"2009"},{"1":"Gentoo","2":"Biscoe","3":"55.1","4":"16.0","5":"230","6":"5850","7":"male","8":"2009"},{"1":"Gentoo","2":"Biscoe","3":"48.8","4":"16.2","5":"222","6":"6000","7":"male","8":"2009"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql-4" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT *
+FROM penguins
+LIMIT 10</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="8%" />
+<col width="11%" />
+<col width="16%" />
+<col width="15%" />
+<col width="20%" />
+<col width="13%" />
+<col width="7%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="left">island</th>
+<th align="right">bill_length_mm</th>
+<th align="right">bill_depth_mm</th>
+<th align="right">flipper_length_mm</th>
+<th align="right">body_mass_g</th>
+<th align="left">sex</th>
+<th align="right">year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.1</td>
+<td align="right">18.7</td>
+<td align="right">181</td>
+<td align="right">3750</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.5</td>
+<td align="right">17.4</td>
+<td align="right">186</td>
+<td align="right">3800</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">40.3</td>
+<td align="right">18.0</td>
+<td align="right">195</td>
+<td align="right">3250</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">36.7</td>
+<td align="right">19.3</td>
+<td align="right">193</td>
+<td align="right">3450</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.3</td>
+<td align="right">20.6</td>
+<td align="right">190</td>
+<td align="right">3650</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">38.9</td>
+<td align="right">17.8</td>
+<td align="right">181</td>
+<td align="right">3625</td>
+<td align="left">female</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">39.2</td>
+<td align="right">19.6</td>
+<td align="right">195</td>
+<td align="right">4675</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">34.1</td>
+<td align="right">18.1</td>
+<td align="right">193</td>
+<td align="right">3475</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Adelie</td>
+<td align="left">Torgersen</td>
+<td align="right">42.0</td>
+<td align="right">20.2</td>
+<td align="right">190</td>
+<td align="right">4250</td>
+<td align="left">NA</td>
+<td align="right">2007</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="sql"><code>SELECT * 
+FROM penguins
+ORDER BY body_mass_g DESC
+LIMIT 10</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="9%" />
+<col width="8%" />
+<col width="17%" />
+<col width="16%" />
+<col width="21%" />
+<col width="14%" />
+<col width="5%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="left">island</th>
+<th align="right">bill_length_mm</th>
+<th align="right">bill_depth_mm</th>
+<th align="right">flipper_length_mm</th>
+<th align="right">body_mass_g</th>
+<th align="left">sex</th>
+<th align="right">year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">49.2</td>
+<td align="right">15.2</td>
+<td align="right">221</td>
+<td align="right">6300</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">59.6</td>
+<td align="right">17.0</td>
+<td align="right">230</td>
+<td align="right">6050</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">51.1</td>
+<td align="right">16.3</td>
+<td align="right">220</td>
+<td align="right">6000</td>
+<td align="left">male</td>
+<td align="right">2008</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">48.8</td>
+<td align="right">16.2</td>
+<td align="right">222</td>
+<td align="right">6000</td>
+<td align="left">male</td>
+<td align="right">2009</td>
+</tr>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">45.2</td>
+<td align="right">16.4</td>
+<td align="right">223</td>
+<td align="right">5950</td>
+<td align="left">male</td>
+<td align="right">2008</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">49.8</td>
+<td align="right">15.9</td>
+<td align="right">229</td>
+<td align="right">5950</td>
+<td align="left">male</td>
+<td align="right">2009</td>
+</tr>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">48.4</td>
+<td align="right">14.6</td>
+<td align="right">213</td>
+<td align="right">5850</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">49.3</td>
+<td align="right">15.7</td>
+<td align="right">217</td>
+<td align="right">5850</td>
+<td align="left">male</td>
+<td align="right">2007</td>
+</tr>
+<tr class="odd">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">55.1</td>
+<td align="right">16.0</td>
+<td align="right">230</td>
+<td align="right">5850</td>
+<td align="left">male</td>
+<td align="right">2009</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="left">Biscoe</td>
+<td align="right">49.5</td>
+<td align="right">16.2</td>
+<td align="right">229</td>
+<td align="right">5800</td>
+<td align="left">male</td>
+<td align="right">2008</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:1000px;">
+
+</div>
 <div id="numeric-columns" class="section level2">
 <h2>Numeric columns</h2>
 <p>The task is to find the species frequency distribution of penguins with body mass greater than 4000 grams.</p>
@@ -704,7 +998,7 @@ GROUP BY species;</code></pre>
 <p>In <code>SQL</code>, the structure of the query is that <code>SELECT</code> must be written upfront, and so, even though the grouping variable can be written either in the fourth or fifth row of the code, it is somewhat disconnected from where the <code>COUNT</code> operation when written out.</p>
 <p>For two-sided bounds, <code>SQL</code> has an extra function, <code>BETWEEN</code>.</p>
 </div>
-<div id="r-4" class="section level2 left">
+<div id="r-5" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   filter(body_mass_g &gt; 4000) %&gt;% 
@@ -728,7 +1022,7 @@ GROUP BY species;</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-4" class="section level2 right">
+<div id="sql-5" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species, 
        COUNT(species) AS n
@@ -803,7 +1097,7 @@ GROUP BY species</code></pre>
 <p>The major difference is that <code>R</code> uses double equal sign <code>==</code> whereas <code>SQL</code> uses a single equal sign <code>=</code> when subsetting categorical variables.</p>
 <p>For multiple values, <code>R</code> uses %in% and a vector created using <code>c()</code>, whereas <code>SQL</code> uses <code>IN</code> and <code>()</code> respectively.</p>
 </div>
-<div id="r-5" class="section level2 left">
+<div id="r-6" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   filter(island == &quot;Biscoe&quot;) %&gt;% 
@@ -827,7 +1121,7 @@ GROUP BY species</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-5" class="section level2 right">
+<div id="sql-6" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species, 
        COUNT(species) AS n
@@ -899,7 +1193,7 @@ GROUP BY species</code></pre>
 <p><code>SQL</code> uses <code>NULL</code> to encode missing values, which is not to be confused with <code>NULL</code> in <code>R</code>. <code>NULL</code> in <code>R</code> is mainly used to represent the lists with zero length.</p>
 <p>One can use <code>is.na</code> in <code>R</code> to return a logical vector to subset on the data, whereas <code>SQL</code> uses <code>IS NULL</code>. The opposite operation could be performed uing <code>complete.cases</code> and <code>IS NOT NULL</code>, respectively for the two languages.</p>
 <p>Below examines the entries with missing/complete values in the <code>sex</code> column of the data and tabulate the frequency of <code>species.</code></p>
-<div id="r-6" class="section level2 left">
+<div id="r-7" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   filter(is.na(sex)) %&gt;% 
@@ -920,7 +1214,7 @@ GROUP BY species</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-6" class="section level2 right">
+<div id="sql-7" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species,
        COUNT(species) AS n
@@ -988,7 +1282,7 @@ GROUP BY species</code></pre>
 <p>In <code>R</code>, the <code>stringr</code> package provides a consistent framework to perform various string operations. In <code>SQL</code>, there are some similar functions too.</p>
 <p>The first task aims to tally the species of penguins, for entries with island begin with the characters “Torg”.</p>
 <p>The second task aims to tally the species of penguins, for entries with island’s second character equal to “r”.</p>
-<div id="r-7" class="section level2 left">
+<div id="r-8" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>library(stringr)
 
@@ -1011,7 +1305,7 @@ penguins %&gt;%
   </script>
 </div>
 </div>
-<div id="sql-7" class="section level2 right">
+<div id="sql-8" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species, 
        COUNT(species) AS n
@@ -1074,7 +1368,7 @@ GROUP BY species</code></pre>
 <p>Under the <code>dplyr</code> framework, summarisation is done using the <code>summarise</code> function. This provides a very consistent framwork to perform summarisation, compare to base <code>R</code>.</p>
 <p>Similar operation is done using a range of aggregation functions in <code>SQL</code>.</p>
 <p>Interestingly, in <code>SQL</code>, the aggregation functions automatically ignores the <code>NULL</code> values. Whereas in <code>R</code>, if there are any <code>NA</code> values, then any summary will return <code>NA</code> as a warning, unless <code>na.rm = TRUE</code> is specified.</p>
-<div id="r-8" class="section level2 left">
+<div id="r-9" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   group_by(species) %&gt;% 
@@ -1091,7 +1385,7 @@ GROUP BY species</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-8" class="section level2 right">
+<div id="sql-9" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species, 
        MIN(body_mass_g) AS min_mass,
@@ -1150,7 +1444,7 @@ GROUP BY species</code></pre>
 <div id="sorting" class="section level1">
 <h1>Sorting</h1>
 <p><code>R</code> uses <code>arrange</code> and <code>desc</code> to control the ordering. Whereas <code>SQL</code> uses <code>ORDER BY</code> and <code>DESC</code> respectively.</p>
-<div id="r-9" class="section level2 left">
+<div id="r-10" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   group_by(species) %&gt;% 
@@ -1162,7 +1456,7 @@ GROUP BY species</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-9" class="section level2 right">
+<div id="sql-10" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT species, 
        COUNT(*)*1.0/(SELECT COUNT(*) AS total FROM penguins) AS proportion
@@ -1199,12 +1493,12 @@ ORDER BY proportion DESC</code></pre>
 
 </div>
 </div>
-<div id="percentage-calculation-nested-query" class="section level1">
-<h1>Percentage calculation (nested query)</h1>
+<div id="proportion-calculation" class="section level1">
+<h1>Proportion calculation</h1>
 <p>This is where the computations get a bit complicated and <code>dplyr</code> has an edge in my opinion.</p>
 <p>In the code below, we are calculating the frequencies of penguins and the percentages. Notice that this percentage is calculated with respect to the entire penguin population, i.e. the total is needed.</p>
-<p>For <code>R</code>, the total of all the penguins can be computed naturally. However, <code>SQL</code> requires a manual calculation of the total. In addition, <code>SQL</code> will return the same variable type as the input, so the multiplication of <code>1.0</code> is necessary to make the outputs come out as decimals.</p>
-<div id="r-10" class="section level2 left">
+<p>For <code>R</code>, the total of all the penguins can be computed naturally. But in <code>SQL</code>, the output will be of same variable type as the input, so the multiplication of <code>1.0</code> is necessary to make the outputs come out as decimals rather than being rounded to an integer.</p>
+<div id="r-11" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   group_by(species) %&gt;% 
@@ -1217,8 +1511,39 @@ ORDER BY proportion DESC</code></pre>
   </script>
 </div>
 </div>
-<div id="sql-10" class="section level2 right">
+<div id="sql-11" class="section level2 right">
 <h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT species, 
+       COUNT(*)*1.0/SUM(COUNT(*)) OVER () AS proportion
+FROM penguins
+GROUP BY species 
+ORDER BY proportion</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>3 records</caption>
+<thead>
+<tr class="header">
+<th align="left">species</th>
+<th align="right">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Chinstrap</td>
+<td align="right">0.1976744</td>
+</tr>
+<tr class="even">
+<td align="left">Gentoo</td>
+<td align="right">0.3604651</td>
+</tr>
+<tr class="odd">
+<td align="left">Adelie</td>
+<td align="right">0.4418605</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Alternatively:</p>
 <pre class="sql"><code>SELECT species, 
        COUNT(*)*1.0/(SELECT COUNT(*) AS total FROM penguins) AS proportion
 FROM penguins
@@ -1259,7 +1584,7 @@ ORDER BY proportion DESC</code></pre>
 <!-- ORDER BY proportion -->
 <!-- ``` -->
 </div>
-<div style="margin-bottom:800px;">
+<div style="margin-bottom:1000px;">
 
 </div>
 </div>
@@ -1267,7 +1592,7 @@ ORDER BY proportion DESC</code></pre>
 <h1>Filtering using summary statistics</h1>
 <p>In <code>SQL</code>, the <code>WHERE</code> function cannot operate on summary statistics, this is a job for <code>HAVING</code>. However, in <code>R</code>, this is not a restriction.</p>
 <p>In the task below, we will group by the species and sex of the penguins and filter for penguins species/sex combo that has an average mass of greater than 4700 grams. The result should be Gentoo male penguins.</p>
-<div id="r-11" class="section level2 left">
+<div id="r-12" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
   filter(complete.cases(body_mass_g)) %&gt;% 
@@ -1280,7 +1605,7 @@ ORDER BY proportion DESC</code></pre>
 </div>
 <pre class="r"><code>  # summarise(mean(body_mass_g))</code></pre>
 </div>
-<div id="sql-11" class="section level2 right">
+<div id="sql-12" class="section level2 right">
 <h2><code>SQL</code></h2>
 <pre class="sql"><code>SELECT *
 FROM penguins

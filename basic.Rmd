@@ -2,11 +2,7 @@
 title: "Basic operations"
 author: "Kevin Wang"
 date: "4 June 2021"
-output: 
-  html_document:
-    df_print: paged
-    toc: true
-    toc_depth: 1
+output: html_document
 ---
 
 # Data preparation 
@@ -148,6 +144,39 @@ GROUP BY species;
 :::
 
 # Filtering
+
+## Top rows
+
+::: {.left}
+## `R`
+
+```{r}
+penguins %>% 
+  slice(1:10)
+
+penguins %>% 
+  top_n(10, body_mass_g)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+SELECT *
+FROM penguins
+LIMIT 10
+```
+
+```{sql, connection=con}
+SELECT * 
+FROM penguins
+ORDER BY body_mass_g DESC
+LIMIT 10
+```
+:::
+
+::: {style="margin-bottom:1000px;"}
+:::
 
 ## Numeric columns
 
@@ -437,13 +466,13 @@ ORDER BY proportion DESC
 :::
 
 
-# Percentage calculation (nested query)
+# Proportion calculation
 
 This is where the computations get a bit complicated and `dplyr` has an edge in my opinion. 
 
 In the code below, we are calculating the frequencies of penguins and the percentages. Notice that this percentage is calculated with respect to the entire penguin population, i.e. the total is needed. 
 
-For `R`, the total of all the penguins can be computed naturally. However, `SQL` requires a manual calculation of the total. In addition, `SQL` will return the same variable type as the input, so the multiplication of `1.0` is necessary to make the outputs come out as decimals.
+For `R`, the total of all the penguins can be computed naturally. But in `SQL`, the output will be of same variable type as the input, so the multiplication of `1.0` is necessary to make the outputs come out as decimals rather than being rounded to an integer.
 
 ::: {.left}
 ## `R`
@@ -461,11 +490,22 @@ penguins %>%
 ## `SQL`
 ```{sql, connection=con}
 SELECT species, 
+       COUNT(*)*1.0/SUM(COUNT(*)) OVER () AS proportion
+FROM penguins
+GROUP BY species 
+ORDER BY proportion
+```
+
+Alternatively:
+
+```{sql, connection=con}
+SELECT species, 
        COUNT(*)*1.0/(SELECT COUNT(*) AS total FROM penguins) AS proportion
 FROM penguins
 GROUP BY species 
 ORDER BY proportion DESC
 ```
+
 
 <!-- ```{sql, connection=con} -->
 <!-- WITH summary AS  -->
@@ -478,7 +518,7 @@ ORDER BY proportion DESC
 <!-- ``` -->
 :::
 
-::: {style="margin-bottom:800px;"}
+::: {style="margin-bottom:1000px;"}
 :::
 
 # Filtering using summary statistics
