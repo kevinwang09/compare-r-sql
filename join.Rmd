@@ -1,5 +1,5 @@
 ---
-title: "Basic operations"
+title: "Joining datasets"
 author: "Kevin Wang"
 date: "4 June 2021"
 output: html_document
@@ -179,11 +179,46 @@ SELECT *,
        WHEN origin = "LGA" THEN 2
        ELSE 0 END
        AS runways
-FROM flights
-
+FROM flights;
 ```
 :::
 
 ::: {style="margin-bottom:800px;"}
 :::
 
+# SELECT INTO emporary table 
+
+Creating a new object in `R` is relatively easy compared to `SQL`. Unfortunately, the in-memory `SQLite` set-up for this worksheet does not allow me to execute this SQL command. 
+
+::: {.left}
+## `R`
+
+```{r}
+freq_carrier = flights %>% 
+  group_by(carrier) %>% 
+  tally() %>% 
+  arrange(desc(n))
+
+freq_carrier %>% 
+  inner_join(airlines, by = "carrier")
+```
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, eval=FALSE}
+-- Creating frequency of carrier summary table
+SELECT carrier,
+       COUNT(carrier) AS n
+INTO freq_carrier
+FROM flights
+GROUP BY carrier
+ORDER BY n DESC;
+-- Joining that with the airline data
+INNER JOIN airlines ON freq_carrier.carrier = airlines.carriers
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::

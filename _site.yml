@@ -8,6 +8,8 @@ navbar:
         - text: Basic operations
           href: https://kevinwang09.github.io/compare-r-sql/basic.html
         - text: Join operations
+          href: https://kevinwang09.github.io/compare-r-sql/CRUD.html
+        - text: Join operations
           href: https://kevinwang09.github.io/compare-r-sql/join.html
   right:
     - text: "Source code"

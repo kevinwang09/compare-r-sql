@@ -9,10 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Kevin Wang Ph.D." />
+<meta name="author" content="Kevin Wang" />
 
+<meta name="date" content="2021-06-08" />
 
-<title>Compare R and SQL</title>
+<title>Subqueries</title>
 
 <script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -290,35 +291,119 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Compare R and SQL</h1>
-<h4 class="author">Kevin Wang Ph.D.</h4>
+<h1 class="title toc-ignore">Subqueries</h1>
+<h4 class="author">Kevin Wang</h4>
+<h4 class="date">8 June 2021</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a href="#why-i-am-making-this-site">Why I am making this site?</a></li>
-<li><a href="#structure">Structure</a></li>
-<li><a href="#code-reproducibility">Code reproducibility</a></li>
+<li><a href="#data-preparation">Data preparation</a></li>
+<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
+<li><a href="#with-statement"><code>WITH</code> statement</a></li>
 </ul>
 </div>
 
-<div id="why-i-am-making-this-site" class="section level1">
-<h1>Why I am making this site?</h1>
-<ol style="list-style-type: decimal">
-<li>I am already well-versed in <code>R</code> and <code>dplyr</code>, however, I would like to have a place to serve as a cheat-sheet for performing similar tasks in <code>SQL</code></li>
-<li>This is a place for me to document my self-learning during COVID-19. Hopefully this will be a good place to point to when I seek future employments.</li>
-</ol>
+<div id="data-preparation" class="section level1">
+<h1>Data preparation</h1>
+<p>Evaluated only once to create a CSV file.</p>
+<pre class="r"><code>library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %&gt;% 
+                   dplyr::select(faa, name), 
+                 file = &quot;data/airports.csv&quot;)
+readr::write_csv(x = nycflights13::airlines, file = &quot;data/airlines.csv&quot;)
+readr::write_csv(x = nycflights13::flights %&gt;% 
+                   dplyr::slice(1:100) %&gt;% 
+                   dplyr::mutate(date = paste(year, month, day, sep = &quot;/&quot;) %&gt;% lubridate::ymd()) %&gt;% 
+                   dplyr::select(date, carrier, flight, dep_delay, origin, dest), 
+                 file = &quot;data/flights_dates.csv&quot;)</code></pre>
 </div>
-<div id="structure" class="section level1">
-<h1>Structure</h1>
-<p>The rest of this site is organised into webpages at the top, with each webpage correspond to a specific task. Each webpage is organised into two columns, with <code>R</code> codes on the left and the <code>SQL</code> codes on the right, aiming to achieve the same tasks.</p>
+<div id="setting-up-connection-in-r" class="section level1">
+<h1>Setting up connection (in <code>R</code>)</h1>
+<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<pre class="r"><code>library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
+airports = readr::read_csv(file = &quot;data/airports.csv&quot;)
+airlines = readr::read_csv(file = &quot;data/airlines.csv&quot;)
+flights = readr::read_csv(file = &quot;data/flights_dates.csv&quot;)
+dbListTables(con)</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code>dbWriteTable(con, &quot;airports&quot;, airports)
+dbWriteTable(con, &quot;airlines&quot;, airlines)
+dbWriteTable(con, &quot;flights&quot;, flights)
+dbListTables(con)</code></pre>
+<pre><code>## [1] &quot;airlines&quot; &quot;airports&quot; &quot;flights&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;airports&quot;)</code></pre>
+<pre><code>## [1] &quot;faa&quot;  &quot;name&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;airlines&quot;)</code></pre>
+<pre><code>## [1] &quot;carrier&quot; &quot;name&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;flights&quot;)</code></pre>
+<pre><code>## [1] &quot;date&quot;      &quot;carrier&quot;   &quot;flight&quot;    &quot;dep_delay&quot; &quot;origin&quot;    &quot;dest&quot;</code></pre>
 </div>
-<div id="code-reproducibility" class="section level1">
-<h1>Code reproducibility</h1>
-<p><a href="https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml"><img src="https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml/badge.svg" alt="rmarkdown-build" /></a></p>
-<p>This website is deployed through GitHub Actions using the workflow above. As such, the codes should be fully reproducible.</p>
-<p>The data that I have used are available in the same repository. The SQL set up is to use a local connection to a CSV file. It does not represent a typical workflow where one connects to a SQL server, though that is not the focus on this project.</p>
+<div id="with-statement" class="section level1">
+<h1><code>WITH</code> statement</h1>
+<p>The example below is a little bit basic. However, I think it illustrate an important difference between <code>dplyr</code> and <code>SQL</code>. The syntax in <code>dplyr</code> is largely consistent and linear, which makes it more human-readable. Whereas <code>SQL</code> is a bit more cumbersome. E.g. <code>WHERE</code> and <code>HAVING</code> operates on records and summary of records respectively when <code>dplyr</code> simply uses <code>filter</code>.</p>
+<div id="r" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  group_by(carrier) %&gt;% 
+  summarise(mean_dep_delay = mean(dep_delay)) %&gt;% 
+  arrange(desc(mean_dep_delay)) %&gt;% 
+  inner_join(airlines, by = &quot;carrier&quot;) %&gt;% 
+  filter(mean_dep_delay == max(mean_dep_delay))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["mean_dep_delay"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["name"],"name":[3],"type":["chr"],"align":["left"]}],"data":[],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql" class="section level2 right">
+<h2><code>SQL</code></h2>
+<!-- ```{sql, connection=con} -->
+<!-- SELECT f.carrier, AVG(f.dep_delay) AS mean_dep_delay -->
+<!-- FROM flights AS f -->
+<!-- INNER JOIN airlines AS a -->
+<!--   ON f.carrier = a.carrier -->
+<!-- GROUP BY f.carrier -->
+<!-- ``` -->
+<pre class="sql"><code>WITH t as (SELECT f.carrier, a.name, AVG(f.dep_delay) AS mean_dep_delay
+      FROM flights AS f
+      INNER JOIN airlines AS a
+        ON f.carrier = a.carrier
+      GROUP BY f.carrier)
+      
+SELECT *
+FROM t
+WHERE t.mean_dep_delay = (SELECT MAX(t.mean_dep_delay) FROM t);</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="left">name</th>
+<th align="right">mean_dep_delay</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">EV</td>
+<td align="left">ExpressJet Airlines Inc.</td>
+<td align="right">29.52941</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
 </div>
 
 

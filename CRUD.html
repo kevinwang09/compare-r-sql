@@ -9,10 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Kevin Wang Ph.D." />
+<meta name="author" content="Kevin Wang" />
 
+<meta name="date" content="2021-06-04" />
 
-<title>Compare R and SQL</title>
+<title>Create, review, update and delete</title>
 
 <script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -290,35 +291,258 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Compare R and SQL</h1>
-<h4 class="author">Kevin Wang Ph.D.</h4>
+<h1 class="title toc-ignore">Create, review, update and delete</h1>
+<h4 class="author">Kevin Wang</h4>
+<h4 class="date">4 June 2021</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a href="#why-i-am-making-this-site">Why I am making this site?</a></li>
-<li><a href="#structure">Structure</a></li>
-<li><a href="#code-reproducibility">Code reproducibility</a></li>
+<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
+<li><a href="#creating-datatables-with-data">Creating data/tables with data</a></li>
+<li><a href="#inserting">Inserting</a></li>
+<li><a href="#updating-rows">Updating rows</a></li>
+<li><a href="#deleting-rows">Deleting rows</a></li>
 </ul>
 </div>
 
-<div id="why-i-am-making-this-site" class="section level1">
-<h1>Why I am making this site?</h1>
-<ol style="list-style-type: decimal">
-<li>I am already well-versed in <code>R</code> and <code>dplyr</code>, however, I would like to have a place to serve as a cheat-sheet for performing similar tasks in <code>SQL</code></li>
-<li>This is a place for me to document my self-learning during COVID-19. Hopefully this will be a good place to point to when I seek future employments.</li>
-</ol>
+<div id="setting-up-connection-in-r" class="section level1">
+<h1>Setting up connection (in <code>R</code>)</h1>
+<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
+<pre class="r"><code>library(dplyr)
+library(DBI)
+library(tidyverse)
+# Create an ephemeral in-memory RSQLite database
+con = dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
+# tbl = tibble(
+#   numbers = 1:5, 
+#   letters = letters[1:5])
+dbListTables(con)</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code># dbWriteTable(con, &quot;tbl&quot;, tbl)
+# dbListTables(con)
+# dbListFields(con, &quot;tbl&quot;)</code></pre>
 </div>
-<div id="structure" class="section level1">
-<h1>Structure</h1>
-<p>The rest of this site is organised into webpages at the top, with each webpage correspond to a specific task. Each webpage is organised into two columns, with <code>R</code> codes on the left and the <code>SQL</code> codes on the right, aiming to achieve the same tasks.</p>
+<div id="creating-datatables-with-data" class="section level1">
+<h1>Creating data/tables with data</h1>
+<div id="r" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>tbl = tibble(
+  numbers = 1:3,
+  letters = LETTERS[1:3])
+
+print(tbl)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   numbers letters
+##     &lt;int&gt; &lt;chr&gt;  
+## 1       1 A      
+## 2       2 B      
+## 3       3 C</code></pre>
 </div>
-<div id="code-reproducibility" class="section level1">
-<h1>Code reproducibility</h1>
-<p><a href="https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml"><img src="https://github.com/kevinwang09/compare-r-sql/actions/workflows/rmarkdown-build.yaml/badge.svg" alt="rmarkdown-build" /></a></p>
-<p>This website is deployed through GitHub Actions using the workflow above. As such, the codes should be fully reproducible.</p>
-<p>The data that I have used are available in the same repository. The SQL set up is to use a local connection to a CSV file. It does not represent a typical workflow where one connects to a SQL server, though that is not the focus on this project.</p>
+<div id="sql" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>CREATE TABLE tbl (
+  numbers INT,
+  letters VARCHAR(10)
+);</code></pre>
+<pre class="sql"><code>INSERT INTO tbl
+ (numbers, letters)
+VALUES
+ (1, &quot;A&quot;),
+ (2, &quot;B&quot;),
+ (3, &quot;C&quot;);</code></pre>
+<pre class="sql"><code>SELECT *
+FROM tbl;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>3 records</caption>
+<thead>
+<tr class="header">
+<th align="left">numbers</th>
+<th align="left">letters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">A</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">B</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">C</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="inserting" class="section level1">
+<h1>Inserting</h1>
+<div id="r-1" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>tbl = tbl %&gt;% rows_insert(tibble(numbers = 4, letters = &quot;D&quot;))</code></pre>
+<pre><code>## Matching, by = &quot;numbers&quot;</code></pre>
+<pre class="r"><code>print(tbl)</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   numbers letters
+##     &lt;dbl&gt; &lt;chr&gt;  
+## 1       1 A      
+## 2       2 B      
+## 3       3 C      
+## 4       4 D</code></pre>
+</div>
+<div id="sql-1" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>INSERT INTO tbl
+ (numbers, letters)
+VALUES
+ (4, &quot;D&quot;);</code></pre>
+<pre class="sql"><code>SELECT *
+FROM tbl;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>4 records</caption>
+<thead>
+<tr class="header">
+<th align="left">numbers</th>
+<th align="left">letters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">A</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">B</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">C</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">D</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:500px;">
+
+</div>
+</div>
+<div id="updating-rows" class="section level1">
+<h1>Updating rows</h1>
+<div id="r-2" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>tbl = tbl %&gt;% rows_update(tibble(numbers = 2:3, letters = &quot;Unknown&quot;))</code></pre>
+<pre><code>## Matching, by = &quot;numbers&quot;</code></pre>
+<pre class="r"><code>print(tbl)</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   numbers letters
+##     &lt;dbl&gt; &lt;chr&gt;  
+## 1       1 A      
+## 2       2 Unknown
+## 3       3 Unknown
+## 4       4 D</code></pre>
+</div>
+<div id="sql-2" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>UPDATE tbl
+SET 
+  letters = &#39;Unknown&#39;
+WHERE 
+  numbers IN (2, 3)</code></pre>
+<pre class="sql"><code>SELECT *
+FROM tbl;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>4 records</caption>
+<thead>
+<tr class="header">
+<th align="left">numbers</th>
+<th align="left">letters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">A</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">Unknown</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">Unknown</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">D</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:500px;">
+
+</div>
+</div>
+<div id="deleting-rows" class="section level1">
+<h1>Deleting rows</h1>
+<div id="r-3" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>tbl = tbl %&gt;% 
+  filter(letters != &quot;Unknown&quot;)
+
+print(tbl)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   numbers letters
+##     &lt;dbl&gt; &lt;chr&gt;  
+## 1       1 A      
+## 2       4 D</code></pre>
+</div>
+<div id="sql-3" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>DELETE FROM tbl WHERE letters = &#39;Unknown&#39;</code></pre>
+<pre class="sql"><code>SELECT *
+FROM tbl;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>2 records</caption>
+<thead>
+<tr class="header">
+<th align="right">numbers</th>
+<th align="left">letters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">A</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">D</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:500px;">
+
+</div>
 </div>
 
 

@@ -1,0 +1,99 @@
+---
+title: "Subqueries"
+author: "Kevin Wang"
+date: "8 June 2021"
+output: html_document
+---
+
+# Data preparation 
+
+Evaluated only once to create a CSV file.
+
+```{r, eval = FALSE}
+library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %>% 
+                   dplyr::select(faa, name), 
+                 file = "data/airports.csv")
+readr::write_csv(x = nycflights13::airlines, file = "data/airlines.csv")
+readr::write_csv(x = nycflights13::flights %>% 
+                   dplyr::slice(1:100) %>% 
+                   dplyr::mutate(date = paste(year, month, day, sep = "/") %>% lubridate::ymd()) %>% 
+                   dplyr::select(date, carrier, flight, dep_delay, origin, dest), 
+                 file = "data/flights_dates.csv")
+```
+
+# Setting up connection (in `R`)
+
+This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database. 
+
+The print methods for `R` is different to that of `SQL`. 
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+airports = readr::read_csv(file = "data/airports.csv")
+airlines = readr::read_csv(file = "data/airlines.csv")
+flights = readr::read_csv(file = "data/flights_dates.csv")
+dbListTables(con)
+
+dbWriteTable(con, "airports", airports)
+dbWriteTable(con, "airlines", airlines)
+dbWriteTable(con, "flights", flights)
+dbListTables(con)
+dbListFields(con, "airports")
+dbListFields(con, "airlines")
+dbListFields(con, "flights")
+```
+
+
+# `WITH` statement
+
+The example below is a little bit basic. However, I think it illustrate an important difference between `dplyr` and `SQL`. The syntax in `dplyr` is largely consistent and linear, which makes it more human-readable. Whereas `SQL` is a bit more cumbersome. E.g. `WHERE` and `HAVING` operates on records and summary of records respectively when `dplyr` simply uses `filter`. 
+
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(mean_dep_delay = mean(dep_delay)) %>% 
+  arrange(desc(mean_dep_delay)) %>% 
+  inner_join(airlines, by = "carrier") %>% 
+  filter(mean_dep_delay == max(mean_dep_delay))
+```
+:::
+
+::: {.right}
+## `SQL`
+
+
+<!-- ```{sql, connection=con} -->
+<!-- SELECT f.carrier, AVG(f.dep_delay) AS mean_dep_delay -->
+<!-- FROM flights AS f -->
+<!-- INNER JOIN airlines AS a -->
+<!--   ON f.carrier = a.carrier -->
+<!-- GROUP BY f.carrier -->
+<!-- ``` -->
+
+
+```{sql, connection=con}
+WITH t as (SELECT f.carrier, a.name, AVG(f.dep_delay) AS mean_dep_delay
+      FROM flights AS f
+      INNER JOIN airlines AS a
+        ON f.carrier = a.carrier
+      GROUP BY f.carrier)
+      
+SELECT *
+FROM t
+WHERE t.mean_dep_delay = (SELECT MAX(t.mean_dep_delay) FROM t);
+```
+
+:::
+
+::: {style="margin-bottom:800px;"}
+:::

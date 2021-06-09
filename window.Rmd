@@ -1,0 +1,136 @@
+---
+title: "Window"
+author: "Kevin Wang"
+date: "9 June 2021"
+output: html_document
+---
+
+# Data preparation 
+
+Evaluated only once to create a CSV file.
+
+```{r, eval = FALSE}
+library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %>% 
+                   dplyr::select(faa, name), 
+                 file = "data/airports.csv")
+readr::write_csv(x = nycflights13::airlines, file = "data/airlines.csv")
+readr::write_csv(x = nycflights13::flights %>% 
+                   dplyr::sample_n(100) %>% 
+                   dplyr::mutate(date = paste(year, month, day, sep = "/") %>% lubridate::ymd()) %>% 
+                   dplyr::select(date, carrier, flight, dep_delay, origin, dest), 
+                 file = "data/flights_dates.csv")
+```
+
+# Setting up connection (in `R`)
+
+This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database. 
+
+The print methods for `R` is different to that of `SQL`. 
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+flights = readr::read_csv(file = "data/flights_dates.csv")
+dbListTables(con)
+
+dbWriteTable(con, "flights", flights)
+dbListTables(con)
+dbListFields(con, "flights")
+```
+
+
+# Summary over the entire data 
+
+The task is to provide both a summary for the carrier-specific mean departure delay as well as the average across all the data. 
+
+`dplyr` handles this via the use of `group_by`, whereas `SQL` requires `OVER`.
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(carrier_mean_delay = mean(dep_delay),
+            overall_mean_delay = mean(flights$dep_delay)) %>% 
+  ungroup()
+```
+
+
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, connection=con}
+SELECT carrier, 
+       AVG(dep_delay) AS carrier_mean_delay,
+       AVG(dep_delay) OVER() AS overall_mean_delay
+FROM flights
+GROUP BY carrier
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Summary statistics by partitions
+
+::: {.left}
+## `R`
+
+```{r}
+
+```
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, connection=con}
+SELECT carrier, 
+  origin,
+  AVG(dep_delay) OVER(PARTITION BY carrier) AS carrier_delay,
+  AVG(dep_delay) OVER(PARTITION BY origin) AS origin_delay
+FROM flights
+GROUP BY carrier, origin
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Cumulative sum/average
+
+::: {.left}
+## `R`
+
+```{r}
+flights %>% 
+  arrange(date) %>% 
+  group_by(carrier, date) %>% 
+  dplyr::summarise(running_total_delay = cumsum(dep_delay))
+```
+:::
+
+::: {.right}
+## `SQL`
+
+```{sql, connection=con}
+SELECT carrier, 
+  date,
+  origin,
+  SUM(dep_delay) OVER(ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total_delay
+FROM flights
+GROUP BY carrier
+ORDER BY carrier, date;
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::

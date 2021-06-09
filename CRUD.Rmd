@@ -1,0 +1,155 @@
+---
+title: "Create, review, update and delete"
+author: "Kevin Wang"
+date: "4 June 2021"
+output: html_document
+---
+
+# Setting up connection (in `R`)
+
+This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database. 
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(DBI)
+library(tidyverse)
+# Create an ephemeral in-memory RSQLite database
+con = dbConnect(RSQLite::SQLite(), ":memory:")
+# tbl = tibble(
+#   numbers = 1:5, 
+#   letters = letters[1:5])
+dbListTables(con)
+
+# dbWriteTable(con, "tbl", tbl)
+# dbListTables(con)
+# dbListFields(con, "tbl")
+```
+
+
+# Creating data/tables with data
+
+::: {.left}
+## `R`
+
+```{r}
+tbl = tibble(
+  numbers = 1:3,
+  letters = LETTERS[1:3])
+
+print(tbl)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+CREATE TABLE tbl (
+  numbers INT,
+  letters VARCHAR(10)
+);
+```
+
+```{sql, connection=con}
+INSERT INTO tbl
+ (numbers, letters)
+VALUES
+ (1, "A"),
+ (2, "B"),
+ (3, "C");
+```
+
+```{sql, connection=con}
+SELECT *
+FROM tbl;
+```
+:::
+
+::: {style="margin-bottom:800px;"}
+:::
+
+# Inserting
+::: {.left}
+## `R`
+
+```{r}
+tbl = tbl %>% rows_insert(tibble(numbers = 4, letters = "D"))
+
+print(tbl)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+INSERT INTO tbl
+ (numbers, letters)
+VALUES
+ (4, "D");
+```
+
+```{sql, connection=con}
+SELECT *
+FROM tbl;
+```
+:::
+
+::: {style="margin-bottom:500px;"}
+:::
+
+# Updating rows
+::: {.left}
+## `R`
+
+```{r}
+tbl = tbl %>% rows_update(tibble(numbers = 2:3, letters = "Unknown"))
+
+print(tbl)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+UPDATE tbl
+SET 
+  letters = 'Unknown'
+WHERE 
+  numbers IN (2, 3)
+```
+
+```{sql, connection=con}
+SELECT *
+FROM tbl;
+```
+:::
+
+::: {style="margin-bottom:500px;"}
+:::
+
+# Deleting rows
+::: {.left}
+## `R`
+
+```{r}
+tbl = tbl %>% 
+  filter(letters != "Unknown")
+
+print(tbl)
+```
+:::
+
+::: {.right}
+## `SQL`
+```{sql, connection=con}
+DELETE FROM tbl WHERE letters = 'Unknown'
+```
+
+```{sql, connection=con}
+SELECT *
+FROM tbl;
+```
+:::
+
+
+::: {style="margin-bottom:500px;"}
+:::

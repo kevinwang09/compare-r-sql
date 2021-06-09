@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Kevin Wang" />
+
+<meta name="date" content="2021-06-09" />
+
+<title>Window</title>
+
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Compare R and SQL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Basic concepts
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/basic.html">Basic operations</a>
+    </li>
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/CRUD.html">Join operations</a>
+    </li>
+    <li>
+      <a href="https://kevinwang09.github.io/compare-r-sql/join.html">Join operations</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/kevinwang09/compare-r-sql">
+    <span class="fas fa-code"></span>
+     
+    Source code
+  </a>
+</li>
+<li>
+  <a href="https://kevinwang09.github.io">
+    <span class="fas fa-user-tie"></span>
+     
+    About me
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Window</h1>
+<h4 class="author">Kevin Wang</h4>
+<h4 class="date">9 June 2021</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#data-preparation">Data preparation</a></li>
+<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
+<li><a href="#summary-over-the-entire-data">Summary over the entire data</a></li>
+<li><a href="#summary-statistics-by-partitions">Summary statistics by partitions</a></li>
+<li><a href="#cumulative-sumaverage">Cumulative sum/average</a></li>
+</ul>
+</div>
+
+<div id="data-preparation" class="section level1">
+<h1>Data preparation</h1>
+<p>Evaluated only once to create a CSV file.</p>
+<pre class="r"><code>library(nycflights13)
+library(tidyverse)
+set.seed(123)
+readr::write_csv(x = nycflights13::airports %&gt;% 
+                   dplyr::select(faa, name), 
+                 file = &quot;data/airports.csv&quot;)
+readr::write_csv(x = nycflights13::airlines, file = &quot;data/airlines.csv&quot;)
+readr::write_csv(x = nycflights13::flights %&gt;% 
+                   dplyr::sample_n(100) %&gt;% 
+                   dplyr::mutate(date = paste(year, month, day, sep = &quot;/&quot;) %&gt;% lubridate::ymd()) %&gt;% 
+                   dplyr::select(date, carrier, flight, dep_delay, origin, dest), 
+                 file = &quot;data/flights_dates.csv&quot;)</code></pre>
+</div>
+<div id="setting-up-connection-in-r" class="section level1">
+<h1>Setting up connection (in <code>R</code>)</h1>
+<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<pre class="r"><code>library(dplyr)
+library(DBI)
+# Create an ephemeral in-memory RSQLite database
+con &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
+flights = readr::read_csv(file = &quot;data/flights_dates.csv&quot;)
+dbListTables(con)</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code>dbWriteTable(con, &quot;flights&quot;, flights)
+dbListTables(con)</code></pre>
+<pre><code>## [1] &quot;flights&quot;</code></pre>
+<pre class="r"><code>dbListFields(con, &quot;flights&quot;)</code></pre>
+<pre><code>## [1] &quot;date&quot;      &quot;carrier&quot;   &quot;flight&quot;    &quot;dep_delay&quot; &quot;origin&quot;    &quot;dest&quot;</code></pre>
+</div>
+<div id="summary-over-the-entire-data" class="section level1">
+<h1>Summary over the entire data</h1>
+<p>The task is to provide both a summary for the carrier-specific mean departure delay as well as the average across all the data.</p>
+<p><code>dplyr</code> handles this via the use of <code>group_by</code>, whereas <code>SQL</code> requires <code>OVER</code>.</p>
+<div id="r" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  group_by(carrier) %&gt;% 
+  summarise(carrier_mean_delay = mean(dep_delay),
+            overall_mean_delay = mean(flights$dep_delay)) %&gt;% 
+  ungroup()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["carrier_mean_delay"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["overall_mean_delay"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"9E","2":"NA","3":"NA"},{"1":"AA","2":"NA","3":"NA"},{"1":"B6","2":"3.47619","3":"NA"},{"1":"DL","2":"14.18750","3":"NA"},{"1":"EV","2":"29.52941","3":"NA"},{"1":"MQ","2":"NA","3":"NA"},{"1":"UA","2":"13.07692","3":"NA"},{"1":"US","2":"-2.80000","3":"NA"},{"1":"WN","2":"9.00000","3":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT carrier, 
+       AVG(dep_delay) AS carrier_mean_delay,
+       AVG(dep_delay) OVER() AS overall_mean_delay
+FROM flights
+GROUP BY carrier</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>9 records</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">carrier_mean_delay</th>
+<th align="right">overall_mean_delay</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">9E</td>
+<td align="right">-2.00000</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">4.50000</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">3.47619</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="even">
+<td align="left">DL</td>
+<td align="right">14.18750</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="odd">
+<td align="left">EV</td>
+<td align="right">29.52941</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="even">
+<td align="left">MQ</td>
+<td align="right">6.00000</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">13.07692</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="even">
+<td align="left">US</td>
+<td align="right">-2.80000</td>
+<td align="right">6.333333</td>
+</tr>
+<tr class="odd">
+<td align="left">WN</td>
+<td align="right">9.00000</td>
+<td align="right">6.333333</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="summary-statistics-by-partitions" class="section level1">
+<h1>Summary statistics by partitions</h1>
+<div id="r-1" class="section level2 left">
+<h2><code>R</code></h2>
+</div>
+<div id="sql-1" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT carrier, 
+  origin,
+  AVG(dep_delay) OVER(PARTITION BY carrier) AS carrier_delay,
+  AVG(dep_delay) OVER(PARTITION BY origin) AS origin_delay
+FROM flights
+GROUP BY carrier, origin</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="left">origin</th>
+<th align="right">carrier_delay</th>
+<th align="right">origin_delay</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">9E</td>
+<td align="left">JFK</td>
+<td align="right">-1.000000</td>
+<td align="right">6.200000</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="left">EWR</td>
+<td align="right">-5.333333</td>
+<td align="right">8.428571</td>
+</tr>
+<tr class="odd">
+<td align="left">AA</td>
+<td align="left">JFK</td>
+<td align="right">-5.333333</td>
+<td align="right">6.200000</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="left">LGA</td>
+<td align="right">-5.333333</td>
+<td align="right">0.250000</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="left">EWR</td>
+<td align="right">-1.666667</td>
+<td align="right">8.428571</td>
+</tr>
+<tr class="even">
+<td align="left">B6</td>
+<td align="left">JFK</td>
+<td align="right">-1.666667</td>
+<td align="right">6.200000</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="left">LGA</td>
+<td align="right">-1.666667</td>
+<td align="right">0.250000</td>
+</tr>
+<tr class="even">
+<td align="left">DL</td>
+<td align="left">JFK</td>
+<td align="right">9.500000</td>
+<td align="right">6.200000</td>
+</tr>
+<tr class="odd">
+<td align="left">DL</td>
+<td align="left">LGA</td>
+<td align="right">9.500000</td>
+<td align="right">0.250000</td>
+</tr>
+<tr class="even">
+<td align="left">EV</td>
+<td align="left">EWR</td>
+<td align="right">31.000000</td>
+<td align="right">8.428571</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+<div id="cumulative-sumaverage" class="section level1">
+<h1>Cumulative sum/average</h1>
+<div id="r-2" class="section level2 left">
+<h2><code>R</code></h2>
+<pre class="r"><code>flights %&gt;% 
+  arrange(date) %&gt;% 
+  group_by(carrier, date) %&gt;% 
+  dplyr::summarise(running_total_delay = cumsum(dep_delay))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;carrier&#39;, &#39;date&#39;. You can override using the `.groups` argument.</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date"],"name":[2],"type":["date"],"align":["right"]},{"label":["running_total_delay"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"9E","2":"2013-03-27","3":"-1"},{"1":"9E","2":"2013-05-01","3":"-2"},{"1":"9E","2":"2013-05-26","3":"-3"},{"1":"9E","2":"2013-07-10","3":"NA"},{"1":"AA","2":"2013-01-08","3":"-6"},{"1":"AA","2":"2013-02-26","3":"-6"},{"1":"AA","2":"2013-03-05","3":"-2"},{"1":"AA","2":"2013-06-29","3":"64"},{"1":"AA","2":"2013-07-14","3":"-3"},{"1":"AA","2":"2013-08-20","3":"-8"},{"1":"AA","2":"2013-08-30","3":"3"},{"1":"AA","2":"2013-09-05","3":"-6"},{"1":"AA","2":"2013-12-07","3":"NA"},{"1":"B6","2":"2013-02-04","3":"-3"},{"1":"B6","2":"2013-02-17","3":"18"},{"1":"B6","2":"2013-03-07","3":"-6"},{"1":"B6","2":"2013-03-10","3":"5"},{"1":"B6","2":"2013-03-23","3":"-1"},{"1":"B6","2":"2013-03-30","3":"-4"},{"1":"B6","2":"2013-04-09","3":"1"},{"1":"B6","2":"2013-06-02","3":"25"},{"1":"B6","2":"2013-06-04","3":"-6"},{"1":"B6","2":"2013-06-06","3":"23"},{"1":"B6","2":"2013-06-09","3":"34"},{"1":"B6","2":"2013-07-05","3":"1"},{"1":"B6","2":"2013-07-19","3":"-3"},{"1":"B6","2":"2013-10-18","3":"-3"},{"1":"B6","2":"2013-10-20","3":"-3"},{"1":"B6","2":"2013-11-12","3":"0"},{"1":"B6","2":"2013-11-15","3":"-6"},{"1":"B6","2":"2013-11-18","3":"-6"},{"1":"B6","2":"2013-11-30","3":"-14"},{"1":"B6","2":"2013-11-30","3":"15"},{"1":"B6","2":"2013-12-08","3":"-8"},{"1":"DL","2":"2013-01-17","3":"12"},{"1":"DL","2":"2013-01-25","3":"114"},{"1":"DL","2":"2013-02-13","3":"-1"},{"1":"DL","2":"2013-03-10","3":"-5"},{"1":"DL","2":"2013-05-23","3":"87"},{"1":"DL","2":"2013-06-06","3":"-7"},{"1":"DL","2":"2013-06-16","3":"0"},{"1":"DL","2":"2013-06-29","3":"1"},{"1":"DL","2":"2013-08-14","3":"-8"},{"1":"DL","2":"2013-08-24","3":"-2"},{"1":"DL","2":"2013-08-27","3":"-6"},{"1":"DL","2":"2013-08-31","3":"-4"},{"1":"DL","2":"2013-09-28","3":"-4"},{"1":"DL","2":"2013-10-05","3":"-6"},{"1":"DL","2":"2013-10-14","3":"33"},{"1":"DL","2":"2013-10-20","3":"23"},{"1":"EV","2":"2013-02-07","3":"-3"},{"1":"EV","2":"2013-04-19","3":"92"},{"1":"EV","2":"2013-04-20","3":"18"},{"1":"EV","2":"2013-05-17","3":"-7"},{"1":"EV","2":"2013-06-05","3":"-2"},{"1":"EV","2":"2013-06-14","3":"2"},{"1":"EV","2":"2013-06-22","3":"4"},{"1":"EV","2":"2013-07-19","3":"64"},{"1":"EV","2":"2013-08-13","3":"-6"},{"1":"EV","2":"2013-08-25","3":"59"},{"1":"EV","2":"2013-08-28","3":"232"},{"1":"EV","2":"2013-09-02","3":"9"},{"1":"EV","2":"2013-09-25","3":"-9"},{"1":"EV","2":"2013-10-07","3":"25"},{"1":"EV","2":"2013-11-03","3":"-5"},{"1":"EV","2":"2013-11-09","3":"-3"},{"1":"EV","2":"2013-11-12","3":"32"},{"1":"MQ","2":"2013-02-16","3":"13"},{"1":"MQ","2":"2013-03-10","3":"7"},{"1":"MQ","2":"2013-03-14","3":"-10"},{"1":"MQ","2":"2013-03-26","3":"-4"},{"1":"MQ","2":"2013-04-19","3":"NA"},{"1":"MQ","2":"2013-07-28","3":"-11"},{"1":"MQ","2":"2013-07-29","3":"-9"},{"1":"MQ","2":"2013-08-11","3":"19"},{"1":"MQ","2":"2013-08-28","3":"25"},{"1":"MQ","2":"2013-08-29","3":"40"},{"1":"MQ","2":"2013-11-11","3":"-10"},{"1":"UA","2":"2013-01-11","3":"-1"},{"1":"UA","2":"2013-01-23","3":"0"},{"1":"UA","2":"2013-01-30","3":"0"},{"1":"UA","2":"2013-04-01","3":"49"},{"1":"UA","2":"2013-05-14","3":"8"},{"1":"UA","2":"2013-07-10","3":"7"},{"1":"UA","2":"2013-08-16","3":"-4"},{"1":"UA","2":"2013-09-26","3":"1"},{"1":"UA","2":"2013-10-04","3":"4"},{"1":"UA","2":"2013-10-29","3":"-4"},{"1":"UA","2":"2013-12-06","3":"2"},{"1":"UA","2":"2013-12-21","3":"101"},{"1":"UA","2":"2013-12-29","3":"7"},{"1":"US","2":"2013-02-15","3":"-3"},{"1":"US","2":"2013-04-08","3":"-11"},{"1":"US","2":"2013-10-23","3":"-8"},{"1":"US","2":"2013-11-04","3":"6"},{"1":"US","2":"2013-11-28","3":"2"},{"1":"WN","2":"2013-02-17","3":"-1"},{"1":"WN","2":"2013-04-26","3":"35"},{"1":"WN","2":"2013-08-04","3":"6"},{"1":"WN","2":"2013-10-12","3":"-4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sql-2" class="section level2 right">
+<h2><code>SQL</code></h2>
+<pre class="sql"><code>SELECT carrier, 
+  date,
+  origin,
+  SUM(dep_delay) OVER(ORDER BY date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total_delay
+FROM flights
+GROUP BY carrier
+ORDER BY carrier, date;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>9 records</caption>
+<thead>
+<tr class="header">
+<th align="left">carrier</th>
+<th align="right">date</th>
+<th align="left">origin</th>
+<th align="right">running_total_delay</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">9E</td>
+<td align="right">15791</td>
+<td align="left">JFK</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">AA</td>
+<td align="right">15762</td>
+<td align="left">EWR</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">B6</td>
+<td align="right">15860</td>
+<td align="left">LGA</td>
+<td align="right">32</td>
+</tr>
+<tr class="even">
+<td align="left">DL</td>
+<td align="right">15998</td>
+<td align="left">JFK</td>
+<td align="right">57</td>
+</tr>
+<tr class="odd">
+<td align="left">EV</td>
+<td align="right">15861</td>
+<td align="left">LGA</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="left">MQ</td>
+<td align="right">15752</td>
+<td align="left">EWR</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">UA</td>
+<td align="right">15982</td>
+<td align="left">EWR</td>
+<td align="right">34</td>
+</tr>
+<tr class="even">
+<td align="left">US</td>
+<td align="right">15751</td>
+<td align="left">LGA</td>
+<td align="right">-3</td>
+</tr>
+<tr class="odd">
+<td align="left">WN</td>
+<td align="right">15821</td>
+<td align="left">LGA</td>
+<td align="right">38</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div style="margin-bottom:800px;">
+
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
