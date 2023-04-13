@@ -15,8 +15,8 @@
 
 <title>Create, review, update and delete</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.15/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -87,6 +88,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -144,11 +148,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -239,7 +247,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -249,7 +257,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Basic concepts
      
     <span class="caret"></span>
@@ -270,14 +278,14 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/kevinwang09/compare-r-sql">
-    <span class="fas fa-code"></span>
+    <span class="fa fa-code"></span>
      
     Source code
   </a>
 </li>
 <li>
   <a href="https://kevinwang09.github.io">
-    <span class="fas fa-user-tie"></span>
+    <span class="fa fa-user-tie"></span>
      
     About me
   </a>
@@ -299,17 +307,24 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
-<li><a href="#creating-datatables-with-data">Creating data/tables with data</a></li>
-<li><a href="#inserting">Inserting</a></li>
-<li><a href="#updating-rows">Updating rows</a></li>
-<li><a href="#deleting-rows">Deleting rows</a></li>
+<li><a href="#setting-up-connection-in-r"
+id="toc-setting-up-connection-in-r">Setting up connection (in
+<code>R</code>)</a></li>
+<li><a href="#creating-datatables-with-data"
+id="toc-creating-datatables-with-data">Creating data/tables with
+data</a></li>
+<li><a href="#inserting" id="toc-inserting">Inserting</a></li>
+<li><a href="#updating-rows" id="toc-updating-rows">Updating
+rows</a></li>
+<li><a href="#deleting-rows" id="toc-deleting-rows">Deleting
+rows</a></li>
 </ul>
 </div>
 
 <div id="setting-up-connection-in-r" class="section level1">
 <h1>Setting up connection (in <code>R</code>)</h1>
-<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
+<p>This chunk of code will take the in-memory data and allow this data
+to be queried exactly like a SQL database.</p>
 <pre class="r"><code>library(dplyr)
 library(DBI)
 library(tidyverse)
@@ -333,7 +348,7 @@ dbListTables(con)</code></pre>
   letters = LETTERS[1:3])
 
 print(tbl)</code></pre>
-<pre><code>## # A tibble: 3 x 2
+<pre><code>## # A tibble: 3 × 2
 ##   numbers letters
 ##     &lt;int&gt; &lt;chr&gt;  
 ## 1       1 A      
@@ -391,9 +406,9 @@ FROM tbl;</code></pre>
 <pre class="r"><code>tbl = tbl %&gt;% rows_insert(tibble(numbers = 4, letters = &quot;D&quot;))</code></pre>
 <pre><code>## Matching, by = &quot;numbers&quot;</code></pre>
 <pre class="r"><code>print(tbl)</code></pre>
-<pre><code>## # A tibble: 4 x 2
+<pre><code>## # A tibble: 4 × 2
 ##   numbers letters
-##     &lt;dbl&gt; &lt;chr&gt;  
+##     &lt;int&gt; &lt;chr&gt;  
 ## 1       1 A      
 ## 2       2 B      
 ## 3       3 C      
@@ -448,9 +463,9 @@ FROM tbl;</code></pre>
 <pre class="r"><code>tbl = tbl %&gt;% rows_update(tibble(numbers = 2:3, letters = &quot;Unknown&quot;))</code></pre>
 <pre><code>## Matching, by = &quot;numbers&quot;</code></pre>
 <pre class="r"><code>print(tbl)</code></pre>
-<pre><code>## # A tibble: 4 x 2
+<pre><code>## # A tibble: 4 × 2
 ##   numbers letters
-##     &lt;dbl&gt; &lt;chr&gt;  
+##     &lt;int&gt; &lt;chr&gt;  
 ## 1       1 A      
 ## 2       2 Unknown
 ## 3       3 Unknown
@@ -507,9 +522,9 @@ FROM tbl;</code></pre>
   filter(letters != &quot;Unknown&quot;)
 
 print(tbl)</code></pre>
-<pre><code>## # A tibble: 2 x 2
+<pre><code>## # A tibble: 2 × 2
 ##   numbers letters
-##     &lt;dbl&gt; &lt;chr&gt;  
+##     &lt;int&gt; &lt;chr&gt;  
 ## 1       1 A      
 ## 2       4 D</code></pre>
 </div>

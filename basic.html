@@ -15,8 +15,8 @@
 
 <title>Basic operations</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.15/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -87,6 +88,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -144,11 +148,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -239,7 +247,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -249,7 +257,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Basic concepts
      
     <span class="caret"></span>
@@ -270,14 +278,14 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/kevinwang09/compare-r-sql">
-    <span class="fas fa-code"></span>
+    <span class="fa fa-code"></span>
      
     Source code
   </a>
 </li>
 <li>
   <a href="https://kevinwang09.github.io">
-    <span class="fas fa-user-tie"></span>
+    <span class="fa fa-user-tie"></span>
      
     About me
   </a>
@@ -299,17 +307,29 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#data-preparation">Data preparation</a></li>
-<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
-<li><a href="#selecting-columns">Selecting columns</a></li>
-<li><a href="#counting-number-of-distinct-entries">Counting number of distinct entries</a></li>
-<li><a href="#filtering">Filtering</a></li>
-<li><a href="#missing-values">Missing values</a></li>
-<li><a href="#string-operations">String operations</a></li>
-<li><a href="#summarisation">Summarisation</a></li>
-<li><a href="#sorting">Sorting</a></li>
-<li><a href="#proportion-calculation">Proportion calculation</a></li>
-<li><a href="#filtering-using-summary-statistics">Filtering using summary statistics</a></li>
+<li><a href="#data-preparation" id="toc-data-preparation">Data
+preparation</a></li>
+<li><a href="#setting-up-connection-in-r"
+id="toc-setting-up-connection-in-r">Setting up connection (in
+<code>R</code>)</a></li>
+<li><a href="#selecting-columns" id="toc-selecting-columns">Selecting
+columns</a></li>
+<li><a href="#counting-number-of-distinct-entries"
+id="toc-counting-number-of-distinct-entries">Counting number of distinct
+entries</a></li>
+<li><a href="#filtering" id="toc-filtering">Filtering</a></li>
+<li><a href="#missing-values" id="toc-missing-values">Missing
+values</a></li>
+<li><a href="#string-operations" id="toc-string-operations">String
+operations</a></li>
+<li><a href="#summarisation"
+id="toc-summarisation">Summarisation</a></li>
+<li><a href="#sorting" id="toc-sorting">Sorting</a></li>
+<li><a href="#proportion-calculation"
+id="toc-proportion-calculation">Proportion calculation</a></li>
+<li><a href="#filtering-using-summary-statistics"
+id="toc-filtering-using-summary-statistics">Filtering using summary
+statistics</a></li>
 </ul>
 </div>
 
@@ -322,8 +342,10 @@ readr::write_csv(x = penguins, file = &quot;data/penguins.csv&quot;)</code></pre
 </div>
 <div id="setting-up-connection-in-r" class="section level1">
 <h1>Setting up connection (in <code>R</code>)</h1>
-<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
-<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<p>This chunk of code will take the in-memory data and allow this data
+to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of
+<code>SQL</code>.</p>
 <pre class="r"><code>library(dplyr)
 library(DBI)
 # Create an ephemeral in-memory RSQLite database
@@ -565,7 +587,9 @@ FROM penguins;</code></pre>
 </div>
 <div id="selecting-distict-entries-from" class="section level2">
 <h2>Selecting distict entries from</h2>
-<p>Both languages use a version of <code>distinct</code> to extract unique categorical variables, or a combination of several categorical variables.</p>
+<p>Both languages use a version of <code>distinct</code> to extract
+unique categorical variables, or a combination of several categorical
+variables.</p>
 </div>
 <div id="r-2" class="section level2 left">
 <h2><code>R</code></h2>
@@ -652,8 +676,10 @@ FROM penguins;</code></pre>
 <div id="counting-number-of-distinct-entries" class="section level1">
 <h1>Counting number of distinct entries</h1>
 <p>This is a frequency table.</p>
-<p><code>R</code> requires a tally function, which is smart enough to know that the grouping variable must always be kept.</p>
-<p><code>SQL</code> requires manual selection of both the grouping variable and the numerical frequencies.</p>
+<p><code>R</code> requires a tally function, which is smart enough to
+know that the grouping variable must always be kept.</p>
+<p><code>SQL</code> requires manual selection of both the grouping
+variable and the numerical frequencies.</p>
 <div id="r-3" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;%
@@ -996,10 +1022,21 @@ LIMIT 10</code></pre>
 </div>
 <div id="numeric-columns" class="section level2">
 <h2>Numeric columns</h2>
-<p>The task is to find the species frequency distribution of penguins with body mass greater than 4000 grams.</p>
-<p>The ordering of the <code>dplyr</code> verbs matter quite a bit here. The filtering operation must be done first, before the tallying. This is because the tallying operation (which is fundamentally a <code>summarise</code> operation) is an aggregation of the raw data. And thus, if the order is reversed, information regarding body mass is lost.</p>
-<p>In <code>SQL</code>, the structure of the query is that <code>SELECT</code> must be written upfront, and so, even though the grouping variable can be written either in the fourth or fifth row of the code, it is somewhat disconnected from where the <code>COUNT</code> operation when written out.</p>
-<p>For two-sided bounds, <code>SQL</code> has an extra function, <code>BETWEEN</code>.</p>
+<p>The task is to find the species frequency distribution of penguins
+with body mass greater than 4000 grams.</p>
+<p>The ordering of the <code>dplyr</code> verbs matter quite a bit here.
+The filtering operation must be done first, before the tallying. This is
+because the tallying operation (which is fundamentally a
+<code>summarise</code> operation) is an aggregation of the raw data. And
+thus, if the order is reversed, information regarding body mass is
+lost.</p>
+<p>In <code>SQL</code>, the structure of the query is that
+<code>SELECT</code> must be written upfront, and so, even though the
+grouping variable can be written either in the fourth or fifth row of
+the code, it is somewhat disconnected from where the <code>COUNT</code>
+operation when written out.</p>
+<p>For two-sided bounds, <code>SQL</code> has an extra function,
+<code>BETWEEN</code>.</p>
 </div>
 <div id="r-5" class="section level2 left">
 <h2><code>R</code></h2>
@@ -1097,8 +1134,12 @@ GROUP BY species</code></pre>
 </div>
 <div id="categorical-columns" class="section level2">
 <h2>Categorical columns</h2>
-<p>The major difference is that <code>R</code> uses double equal sign <code>==</code> whereas <code>SQL</code> uses a single equal sign <code>=</code> when subsetting categorical variables.</p>
-<p>For multiple values, <code>R</code> uses %in% and a vector created using <code>c()</code>, whereas <code>SQL</code> uses <code>IN</code> and <code>()</code> respectively.</p>
+<p>The major difference is that <code>R</code> uses double equal sign
+<code>==</code> whereas <code>SQL</code> uses a single equal sign
+<code>=</code> when subsetting categorical variables.</p>
+<p>For multiple values, <code>R</code> uses %in% and a vector created
+using <code>c()</code>, whereas <code>SQL</code> uses <code>IN</code>
+and <code>()</code> respectively.</p>
 </div>
 <div id="r-6" class="section level2 left">
 <h2><code>R</code></h2>
@@ -1193,9 +1234,18 @@ GROUP BY species</code></pre>
 <div id="missing-values" class="section level1">
 <h1>Missing values</h1>
 <p><code>R</code> uses <code>NA</code> to encode missing values.</p>
-<p><code>SQL</code> uses <code>NULL</code> to encode missing values, which is not to be confused with <code>NULL</code> in <code>R</code>. <code>NULL</code> in <code>R</code> is mainly used to represent the lists with zero length.</p>
-<p>One can use <code>is.na</code> in <code>R</code> to return a logical vector to subset on the data, whereas <code>SQL</code> uses <code>IS NULL</code>. The opposite operation could be performed uing <code>complete.cases</code> and <code>IS NOT NULL</code>, respectively for the two languages.</p>
-<p>Below examines the entries with missing/complete values in the <code>sex</code> column of the data and tabulate the frequency of <code>species.</code></p>
+<p><code>SQL</code> uses <code>NULL</code> to encode missing values,
+which is not to be confused with <code>NULL</code> in <code>R</code>.
+<code>NULL</code> in <code>R</code> is mainly used to represent the
+lists with zero length.</p>
+<p>One can use <code>is.na</code> in <code>R</code> to return a logical
+vector to subset on the data, whereas <code>SQL</code> uses
+<code>IS NULL</code>. The opposite operation could be performed uing
+<code>complete.cases</code> and <code>IS NOT NULL</code>, respectively
+for the two languages.</p>
+<p>Below examines the entries with missing/complete values in the
+<code>sex</code> column of the data and tabulate the frequency of
+<code>species.</code></p>
 <div id="r-7" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
@@ -1282,9 +1332,13 @@ GROUP BY species</code></pre>
 </div>
 <div id="string-operations" class="section level1">
 <h1>String operations</h1>
-<p>In <code>R</code>, the <code>stringr</code> package provides a consistent framework to perform various string operations. In <code>SQL</code>, there are some similar functions too.</p>
-<p>The first task aims to tally the species of penguins, for entries with island begin with the characters “Torg”.</p>
-<p>The second task aims to tally the species of penguins, for entries with island’s second character equal to “r”.</p>
+<p>In <code>R</code>, the <code>stringr</code> package provides a
+consistent framework to perform various string operations. In
+<code>SQL</code>, there are some similar functions too.</p>
+<p>The first task aims to tally the species of penguins, for entries
+with island begin with the characters “Torg”.</p>
+<p>The second task aims to tally the species of penguins, for entries
+with island’s second character equal to “r”.</p>
 <div id="r-8" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>library(stringr)
@@ -1368,9 +1422,16 @@ GROUP BY species</code></pre>
 </div>
 <div id="summarisation" class="section level1">
 <h1>Summarisation</h1>
-<p>Under the <code>dplyr</code> framework, summarisation is done using the <code>summarise</code> function. This provides a very consistent framwork to perform summarisation, compare to base <code>R</code>.</p>
-<p>Similar operation is done using a range of aggregation functions in <code>SQL</code>.</p>
-<p>Interestingly, in <code>SQL</code>, the aggregation functions automatically ignores the <code>NULL</code> values. Whereas in <code>R</code>, if there are any <code>NA</code> values, then any summary will return <code>NA</code> as a warning, unless <code>na.rm = TRUE</code> is specified.</p>
+<p>Under the <code>dplyr</code> framework, summarisation is done using
+the <code>summarise</code> function. This provides a very consistent
+framwork to perform summarisation, compare to base <code>R</code>.</p>
+<p>Similar operation is done using a range of aggregation functions in
+<code>SQL</code>.</p>
+<p>Interestingly, in <code>SQL</code>, the aggregation functions
+automatically ignores the <code>NULL</code> values. Whereas in
+<code>R</code>, if there are any <code>NA</code> values, then any
+summary will return <code>NA</code> as a warning, unless
+<code>na.rm = TRUE</code> is specified.</p>
 <div id="r-9" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
@@ -1446,7 +1507,9 @@ GROUP BY species</code></pre>
 </div>
 <div id="sorting" class="section level1">
 <h1>Sorting</h1>
-<p><code>R</code> uses <code>arrange</code> and <code>desc</code> to control the ordering. Whereas <code>SQL</code> uses <code>ORDER BY</code> and <code>DESC</code> respectively.</p>
+<p><code>R</code> uses <code>arrange</code> and <code>desc</code> to
+control the ordering. Whereas <code>SQL</code> uses
+<code>ORDER BY</code> and <code>DESC</code> respectively.</p>
 <div id="r-10" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
@@ -1498,9 +1561,16 @@ ORDER BY proportion DESC</code></pre>
 </div>
 <div id="proportion-calculation" class="section level1">
 <h1>Proportion calculation</h1>
-<p>This is where the computations get a bit complicated and <code>dplyr</code> has an edge in my opinion.</p>
-<p>In the code below, we are calculating the frequencies of penguins and the percentages. Notice that this percentage is calculated with respect to the entire penguin population, i.e. the total is needed.</p>
-<p>For <code>R</code>, the total of all the penguins can be computed naturally. But in <code>SQL</code>, the output will be of same variable type as the input, so the multiplication of <code>1.0</code> is necessary to make the outputs come out as decimals rather than being rounded to an integer.</p>
+<p>This is where the computations get a bit complicated and
+<code>dplyr</code> has an edge in my opinion.</p>
+<p>In the code below, we are calculating the frequencies of penguins and
+the percentages. Notice that this percentage is calculated with respect
+to the entire penguin population, i.e. the total is needed.</p>
+<p>For <code>R</code>, the total of all the penguins can be computed
+naturally. But in <code>SQL</code>, the output will be of same variable
+type as the input, so the multiplication of <code>1.0</code> is
+necessary to make the outputs come out as decimals rather than being
+rounded to an integer.</p>
 <div id="r-11" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 
@@ -1593,8 +1663,13 @@ ORDER BY proportion DESC</code></pre>
 </div>
 <div id="filtering-using-summary-statistics" class="section level1">
 <h1>Filtering using summary statistics</h1>
-<p>In <code>SQL</code>, the <code>WHERE</code> function cannot operate on summary statistics, this is a job for <code>HAVING</code>. However, in <code>R</code>, this is not a restriction.</p>
-<p>In the task below, we will group by the species and sex of the penguins and filter for penguins species/sex combo that has an average mass of greater than 4700 grams. The result should be Gentoo male penguins.</p>
+<p>In <code>SQL</code>, the <code>WHERE</code> function cannot operate
+on summary statistics, this is a job for <code>HAVING</code>. However,
+in <code>R</code>, this is not a restriction.</p>
+<p>In the task below, we will group by the species and sex of the
+penguins and filter for penguins species/sex combo that has an average
+mass of greater than 4700 grams. The result should be Gentoo male
+penguins.</p>
 <div id="r-12" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>penguins %&gt;% 

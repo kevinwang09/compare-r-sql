@@ -15,8 +15,8 @@
 
 <title>Joining datasets</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.15/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -87,6 +88,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -144,11 +148,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -239,7 +247,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -249,7 +257,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Basic concepts
      
     <span class="caret"></span>
@@ -270,14 +278,14 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/kevinwang09/compare-r-sql">
-    <span class="fas fa-code"></span>
+    <span class="fa fa-code"></span>
      
     Source code
   </a>
 </li>
 <li>
   <a href="https://kevinwang09.github.io">
-    <span class="fas fa-user-tie"></span>
+    <span class="fa fa-user-tie"></span>
      
     About me
   </a>
@@ -299,14 +307,21 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#data-preparation">Data preparation</a></li>
-<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
-<li><a href="#inner-join">Inner join</a></li>
-<li><a href="#aliasing">Aliasing</a></li>
-<li><a href="#multiple-inner-joins">Multiple inner joins</a></li>
-<li><a href="#renamingsubquery-during-join">Renaming/subquery during join</a></li>
-<li><a href="#case-when">Case when</a></li>
-<li><a href="#select-into-emporary-table">SELECT INTO emporary table</a></li>
+<li><a href="#data-preparation" id="toc-data-preparation">Data
+preparation</a></li>
+<li><a href="#setting-up-connection-in-r"
+id="toc-setting-up-connection-in-r">Setting up connection (in
+<code>R</code>)</a></li>
+<li><a href="#inner-join" id="toc-inner-join">Inner join</a></li>
+<li><a href="#aliasing" id="toc-aliasing">Aliasing</a></li>
+<li><a href="#multiple-inner-joins"
+id="toc-multiple-inner-joins">Multiple inner joins</a></li>
+<li><a href="#renamingsubquery-during-join"
+id="toc-renamingsubquery-during-join">Renaming/subquery during
+join</a></li>
+<li><a href="#case-when" id="toc-case-when">Case when</a></li>
+<li><a href="#select-into-emporary-table"
+id="toc-select-into-emporary-table">SELECT INTO emporary table</a></li>
 </ul>
 </div>
 
@@ -327,8 +342,10 @@ readr::write_csv(x = nycflights13::flights %&gt;%
 </div>
 <div id="setting-up-connection-in-r" class="section level1">
 <h1>Setting up connection (in <code>R</code>)</h1>
-<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
-<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<p>This chunk of code will take the in-memory data and allow this data
+to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of
+<code>SQL</code>.</p>
 <pre class="r"><code>library(dplyr)
 library(DBI)
 # Create an ephemeral in-memory RSQLite database
@@ -352,8 +369,16 @@ dbListTables(con)</code></pre>
 </div>
 <div id="inner-join" class="section level1">
 <h1>Inner join</h1>
-<p>I remembered at one point, joining data frames in <code>R</code> to be quite painful. Things changed a lot after <code>dplyr</code> gained popularity.</p>
-<p>Inner join in both language behave pretty similarly. The only difference is that the use of <code>by</code> in <code>R</code> and the use of <code>ON</code> in <code>SQL</code>. <code>R</code> allows a single specification of a common column when joining, whereas <code>SQL</code> needs explicitly specify the common column by name on both data. The way to avoid this is to use the function <code>USING (common_column_name)</code>.</p>
+<p>I remembered at one point, joining data frames in <code>R</code> to
+be quite painful. Things changed a lot after <code>dplyr</code> gained
+popularity.</p>
+<p>Inner join in both language behave pretty similarly. The only
+difference is that the use of <code>by</code> in <code>R</code> and the
+use of <code>ON</code> in <code>SQL</code>. <code>R</code> allows a
+single specification of a common column when joining, whereas
+<code>SQL</code> needs explicitly specify the common column by name on
+both data. The way to avoid this is to use the function
+<code>USING (common_column_name)</code>.</p>
 <div id="r" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>flights %&gt;% 
@@ -373,6 +398,15 @@ INNER JOIN airlines
 <div class="knitsql-table">
 <table>
 <caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="10%" />
+<col width="7%" />
+<col width="11%" />
+<col width="36%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">carrier</th>
@@ -485,7 +519,8 @@ INNER JOIN airlines
 </div>
 <div id="aliasing" class="section level1">
 <h1>Aliasing</h1>
-<p>This is unique to <code>SQL</code>, as we can freely rename the naming of variables in <code>R</code>.</p>
+<p>This is unique to <code>SQL</code>, as we can freely rename the
+naming of variables in <code>R</code>.</p>
 <pre class="sql"><code>SELECT *
 FROM flights as f
 INNER JOIN airlines AS a
@@ -493,6 +528,15 @@ INNER JOIN airlines AS a
 <div class="knitsql-table">
 <table>
 <caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="10%" />
+<col width="7%" />
+<col width="11%" />
+<col width="36%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">carrier</th>
@@ -602,7 +646,9 @@ INNER JOIN airlines AS a
 <div id="multiple-inner-joins" class="section level1">
 <h1>Multiple inner joins</h1>
 <p>Multiple joins in both languages are straight forward.</p>
-<p>One of the annoying thing is that <code>SQL</code> allows columns with the same name, so some manual renaming is necessary to avoid confusion in the final output. We will do this in the next section.</p>
+<p>One of the annoying thing is that <code>SQL</code> allows columns
+with the same name, so some manual renaming is necessary to avoid
+confusion in the final output. We will do this in the next section.</p>
 <div id="r-1" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>flights %&gt;% 
@@ -623,8 +669,19 @@ INNER JOIN airlines
 INNER JOIN airports
   ON flights.origin = airports.faa</code></pre>
 <div class="knitsql-table">
-<table>
+<table style="width:100%;">
 <caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="8%" />
+<col width="7%" />
+<col width="8%" />
+<col width="7%" />
+<col width="5%" />
+<col width="8%" />
+<col width="27%" />
+<col width="4%" />
+<col width="21%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">carrier</th>
@@ -759,7 +816,12 @@ INNER JOIN airports
 </div>
 <div id="renamingsubquery-during-join" class="section level1">
 <h1>Renaming/subquery during join</h1>
-<p>This is where I think <code>R</code> can be slightly more flexible, as one can easily insert an extra row of code for renaming of columns rather than querying the data to rename. Though this is down to personal preference, as one could do <code>inner_join(data %&gt;% rename(...))</code> too in <code>R</code> for the same cumbersome effect.</p>
+<p>This is where I think <code>R</code> can be slightly more flexible,
+as one can easily insert an extra row of code for renaming of columns
+rather than querying the data to rename. Though this is down to personal
+preference, as one could do
+<code>inner_join(data %&gt;% rename(...))</code> too in <code>R</code>
+for the same cumbersome effect.</p>
 <div id="r-2" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>flights %&gt;%
@@ -782,8 +844,19 @@ INNER JOIN (SELECT carrier, name AS carrier_name FROM airlines) as rap
 INNER JOIN (SELECT faa, name AS airport_name FROM airports) as ral
   ON flights.origin = ral.faa</code></pre>
 <div class="knitsql-table">
-<table>
+<table style="width:100%;">
 <caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col width="8%" />
+<col width="7%" />
+<col width="8%" />
+<col width="7%" />
+<col width="5%" />
+<col width="8%" />
+<col width="27%" />
+<col width="4%" />
+<col width="21%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">carrier</th>
@@ -1047,7 +1120,10 @@ FROM flights;</code></pre>
 </div>
 <div id="select-into-emporary-table" class="section level1">
 <h1>SELECT INTO emporary table</h1>
-<p>Creating a new object in <code>R</code> is relatively easy compared to <code>SQL</code>. Unfortunately, the in-memory <code>SQLite</code> set-up for this worksheet does not allow me to execute this SQL command.</p>
+<p>Creating a new object in <code>R</code> is relatively easy compared
+to <code>SQL</code>. Unfortunately, the in-memory <code>SQLite</code>
+set-up for this worksheet does not allow me to execute this SQL
+command.</p>
 <div id="r-4" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>freq_carrier = flights %&gt;% 

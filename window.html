@@ -15,8 +15,8 @@
 
 <title>Window</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.15/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -87,6 +88,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -144,11 +148,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -239,7 +247,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -249,7 +257,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Basic concepts
      
     <span class="caret"></span>
@@ -270,14 +278,14 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/kevinwang09/compare-r-sql">
-    <span class="fas fa-code"></span>
+    <span class="fa fa-code"></span>
      
     Source code
   </a>
 </li>
 <li>
   <a href="https://kevinwang09.github.io">
-    <span class="fas fa-user-tie"></span>
+    <span class="fa fa-user-tie"></span>
      
     About me
   </a>
@@ -299,11 +307,19 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#data-preparation">Data preparation</a></li>
-<li><a href="#setting-up-connection-in-r">Setting up connection (in <code>R</code>)</a></li>
-<li><a href="#summary-over-the-entire-data">Summary over the entire data</a></li>
-<li><a href="#summary-statistics-by-partitions">Summary statistics by partitions</a></li>
-<li><a href="#cumulative-sumaverage">Cumulative sum/average</a></li>
+<li><a href="#data-preparation" id="toc-data-preparation">Data
+preparation</a></li>
+<li><a href="#setting-up-connection-in-r"
+id="toc-setting-up-connection-in-r">Setting up connection (in
+<code>R</code>)</a></li>
+<li><a href="#summary-over-the-entire-data"
+id="toc-summary-over-the-entire-data">Summary over the entire
+data</a></li>
+<li><a href="#summary-statistics-by-partitions"
+id="toc-summary-statistics-by-partitions">Summary statistics by
+partitions</a></li>
+<li><a href="#cumulative-sumaverage"
+id="toc-cumulative-sumaverage">Cumulative sum/average</a></li>
 </ul>
 </div>
 
@@ -325,8 +341,10 @@ readr::write_csv(x = nycflights13::flights %&gt;%
 </div>
 <div id="setting-up-connection-in-r" class="section level1">
 <h1>Setting up connection (in <code>R</code>)</h1>
-<p>This chunk of code will take the in-memory data and allow this data to be queried exactly like a SQL database.</p>
-<p>The print methods for <code>R</code> is different to that of <code>SQL</code>.</p>
+<p>This chunk of code will take the in-memory data and allow this data
+to be queried exactly like a SQL database.</p>
+<p>The print methods for <code>R</code> is different to that of
+<code>SQL</code>.</p>
 <pre class="r"><code>library(dplyr)
 library(DBI)
 # Create an ephemeral in-memory RSQLite database
@@ -342,8 +360,10 @@ dbListTables(con)</code></pre>
 </div>
 <div id="summary-over-the-entire-data" class="section level1">
 <h1>Summary over the entire data</h1>
-<p>The task is to provide both a summary for the carrier-specific mean departure delay as well as the average across all the data.</p>
-<p><code>dplyr</code> handles this via the use of <code>group_by</code>, whereas <code>SQL</code> requires <code>OVER</code>.</p>
+<p>The task is to provide both a summary for the carrier-specific mean
+departure delay as well as the average across all the data.</p>
+<p><code>dplyr</code> handles this via the use of <code>group_by</code>,
+whereas <code>SQL</code> requires <code>OVER</code>.</p>
 <div id="r" class="section level2 left">
 <h2><code>R</code></h2>
 <pre class="r"><code>flights %&gt;% 
@@ -529,7 +549,8 @@ GROUP BY carrier, origin</code></pre>
   arrange(date) %&gt;% 
   group_by(carrier, date) %&gt;% 
   dplyr::summarise(running_total_delay = cumsum(dep_delay))</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;carrier&#39;, &#39;date&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;carrier&#39;, &#39;date&#39;. You can override using the
+## `.groups` argument.</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["carrier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date"],"name":[2],"type":["date"],"align":["right"]},{"label":["running_total_delay"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"9E","2":"2013-03-27","3":"-1"},{"1":"9E","2":"2013-05-01","3":"-2"},{"1":"9E","2":"2013-05-26","3":"-3"},{"1":"9E","2":"2013-07-10","3":"NA"},{"1":"AA","2":"2013-01-08","3":"-6"},{"1":"AA","2":"2013-02-26","3":"-6"},{"1":"AA","2":"2013-03-05","3":"-2"},{"1":"AA","2":"2013-06-29","3":"64"},{"1":"AA","2":"2013-07-14","3":"-3"},{"1":"AA","2":"2013-08-20","3":"-8"},{"1":"AA","2":"2013-08-30","3":"3"},{"1":"AA","2":"2013-09-05","3":"-6"},{"1":"AA","2":"2013-12-07","3":"NA"},{"1":"B6","2":"2013-02-04","3":"-3"},{"1":"B6","2":"2013-02-17","3":"18"},{"1":"B6","2":"2013-03-07","3":"-6"},{"1":"B6","2":"2013-03-10","3":"5"},{"1":"B6","2":"2013-03-23","3":"-1"},{"1":"B6","2":"2013-03-30","3":"-4"},{"1":"B6","2":"2013-04-09","3":"1"},{"1":"B6","2":"2013-06-02","3":"25"},{"1":"B6","2":"2013-06-04","3":"-6"},{"1":"B6","2":"2013-06-06","3":"23"},{"1":"B6","2":"2013-06-09","3":"34"},{"1":"B6","2":"2013-07-05","3":"1"},{"1":"B6","2":"2013-07-19","3":"-3"},{"1":"B6","2":"2013-10-18","3":"-3"},{"1":"B6","2":"2013-10-20","3":"-3"},{"1":"B6","2":"2013-11-12","3":"0"},{"1":"B6","2":"2013-11-15","3":"-6"},{"1":"B6","2":"2013-11-18","3":"-6"},{"1":"B6","2":"2013-11-30","3":"-14"},{"1":"B6","2":"2013-11-30","3":"15"},{"1":"B6","2":"2013-12-08","3":"-8"},{"1":"DL","2":"2013-01-17","3":"12"},{"1":"DL","2":"2013-01-25","3":"114"},{"1":"DL","2":"2013-02-13","3":"-1"},{"1":"DL","2":"2013-03-10","3":"-5"},{"1":"DL","2":"2013-05-23","3":"87"},{"1":"DL","2":"2013-06-06","3":"-7"},{"1":"DL","2":"2013-06-16","3":"0"},{"1":"DL","2":"2013-06-29","3":"1"},{"1":"DL","2":"2013-08-14","3":"-8"},{"1":"DL","2":"2013-08-24","3":"-2"},{"1":"DL","2":"2013-08-27","3":"-6"},{"1":"DL","2":"2013-08-31","3":"-4"},{"1":"DL","2":"2013-09-28","3":"-4"},{"1":"DL","2":"2013-10-05","3":"-6"},{"1":"DL","2":"2013-10-14","3":"33"},{"1":"DL","2":"2013-10-20","3":"23"},{"1":"EV","2":"2013-02-07","3":"-3"},{"1":"EV","2":"2013-04-19","3":"92"},{"1":"EV","2":"2013-04-20","3":"18"},{"1":"EV","2":"2013-05-17","3":"-7"},{"1":"EV","2":"2013-06-05","3":"-2"},{"1":"EV","2":"2013-06-14","3":"2"},{"1":"EV","2":"2013-06-22","3":"4"},{"1":"EV","2":"2013-07-19","3":"64"},{"1":"EV","2":"2013-08-13","3":"-6"},{"1":"EV","2":"2013-08-25","3":"59"},{"1":"EV","2":"2013-08-28","3":"232"},{"1":"EV","2":"2013-09-02","3":"9"},{"1":"EV","2":"2013-09-25","3":"-9"},{"1":"EV","2":"2013-10-07","3":"25"},{"1":"EV","2":"2013-11-03","3":"-5"},{"1":"EV","2":"2013-11-09","3":"-3"},{"1":"EV","2":"2013-11-12","3":"32"},{"1":"MQ","2":"2013-02-16","3":"13"},{"1":"MQ","2":"2013-03-10","3":"7"},{"1":"MQ","2":"2013-03-14","3":"-10"},{"1":"MQ","2":"2013-03-26","3":"-4"},{"1":"MQ","2":"2013-04-19","3":"NA"},{"1":"MQ","2":"2013-07-28","3":"-11"},{"1":"MQ","2":"2013-07-29","3":"-9"},{"1":"MQ","2":"2013-08-11","3":"19"},{"1":"MQ","2":"2013-08-28","3":"25"},{"1":"MQ","2":"2013-08-29","3":"40"},{"1":"MQ","2":"2013-11-11","3":"-10"},{"1":"UA","2":"2013-01-11","3":"-1"},{"1":"UA","2":"2013-01-23","3":"0"},{"1":"UA","2":"2013-01-30","3":"0"},{"1":"UA","2":"2013-04-01","3":"49"},{"1":"UA","2":"2013-05-14","3":"8"},{"1":"UA","2":"2013-07-10","3":"7"},{"1":"UA","2":"2013-08-16","3":"-4"},{"1":"UA","2":"2013-09-26","3":"1"},{"1":"UA","2":"2013-10-04","3":"4"},{"1":"UA","2":"2013-10-29","3":"-4"},{"1":"UA","2":"2013-12-06","3":"2"},{"1":"UA","2":"2013-12-21","3":"101"},{"1":"UA","2":"2013-12-29","3":"7"},{"1":"US","2":"2013-02-15","3":"-3"},{"1":"US","2":"2013-04-08","3":"-11"},{"1":"US","2":"2013-10-23","3":"-8"},{"1":"US","2":"2013-11-04","3":"6"},{"1":"US","2":"2013-11-28","3":"2"},{"1":"WN","2":"2013-02-17","3":"-1"},{"1":"WN","2":"2013-04-26","3":"35"},{"1":"WN","2":"2013-08-04","3":"6"},{"1":"WN","2":"2013-10-12","3":"-4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
